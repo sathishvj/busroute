@@ -1,0 +1,45 @@
+application: busroute
+version: 0-1
+runtime: go
+api_version: go1
+
+handlers:
+- url: /favicon\.ico
+  static_files: staticweb/images/favicon.ico
+  upload: staticweb/images/favicon\.ico
+
+- url: /staticweb/images
+  static_dir: staticweb/images
+
+- url: /staticweb
+  static_dir: staticweb
+
+- url: /staticweb/css
+  static_dir: staticweb/css
+
+- url: /staticweb/js
+  static_dir: staticweb/js
+
+- url: /staticweb/js/lib
+  static_dir: staticweb/js/lib
+
+- url: /.*
+  script: _go_app
+
+builtins:
+- datastore_admin: on
+- remote_api: on
+
+skip_files:
+- ^(.*/)?app\.yaml
+- ^(.*/)?app\.yml
+- ^(.*/)?index\.yaml
+- ^(.*/)?index\.yml
+- ^(.*/)?#.*#
+- ^(.*/)?.*~
+- ^(.*/)?.*\.py[co]
+- ^(.*/)?.*/RCS/.*
+- ^(.*/)?\..*
+- ^(.*/)?.*\.bak$
+- ^noup/.*
+
