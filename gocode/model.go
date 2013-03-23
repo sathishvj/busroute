@@ -48,3 +48,24 @@ func getBuses(from, to string) []Bus {
 
 	return selBuses
 }
+
+func getBusNumbers() []string {
+	var busNumbers []string
+	for _, bus := range buses {
+		busNumbers = append(busNumbers, bus.Number)
+	}
+
+	sort.Strings(busNumbers)
+
+	return busNumbers
+}
+
+func getBus(number string) *Bus {
+	for _, bus := range buses {
+		if bus.Number == number {
+			return &bus
+		}
+	}
+
+	return nil
+}

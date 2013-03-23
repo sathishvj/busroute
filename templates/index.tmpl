@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Bangalore Bus Route</title>
+	<title>Bangalore Bus Routes</title>
 	<link rel="stylesheet" href="/staticweb/js/lib/bootstrap/css/bootstrap.min.css">
 	<link rel="stylesheet" href="/staticweb/css/styles.css">
 	<link rel="stylesheet" href="/staticweb/js/lib/bootstrap/css/bootstrap-responsive.min.css">
@@ -18,13 +18,14 @@
 					<span class="icon-bar"></span>
 				</button>
 
-				<a class="brand" href="#">Bangalore Bus Route</a>
+				<!-- <a class="brand" href="#">Bangalore Bus Routes</a> -->
+				<div class="brand">Bangalore Bus Routes</div>
 
 				<div class="nav-collapse collapse">
 					<ul class="nav">
-						<li class="active"><a href="#">A to B</a></li>
-						<li><a href="#about">Bus</a></li>
-						<li><a href="#contact">Stop</a></li>
+						<li id="fromToNavBtn" ><a href="#">From-To</a></li>
+						<li id="busNavBtn" ><a href="#">Bus</a></li>
+						<li id="stopNavBtn" ><a href="#">Stop</a></li>
 					</ul>
 				</div><!--/.nav-collapse -->
 
@@ -33,76 +34,166 @@
 		</div>
 	</div>
 
-	<div class="container">
-		<div class="row">
-			<div class="span3">
-				<div class="control-group">
-					<div class="controls">
-						<label class="control-label" for="fromStop">From Bus Stop</label>
-						<div class="input-prepend">
-							<span class="add-on"><i class="icon-map-marker"></i></span>
-							<input class="span2" id="fromStop" type="text" placeholder="From Stop" >
-						</div>
-						<label class="control-label" for="toStop">To Bus Stop</label>
-						<div class="input-prepend">
-							<span class="add-on"><i class="icon-flag"></i></span>
-							<input class="span2" id="toStop" type="text" placeholder="To Stop" >
+	<div id="route-section">
+		<div class="container">
+			<div class="row">
+				<div class="span3">
+					<div class="control-group">
+						<div class="controls">
+							<label class="control-label" for="fromStop">From Bus Stop</label>
+							<div class="input-prepend">
+								<span class="add-on"><i class="icon-map-marker"></i></span>
+								<input class="span2" id="fromStop" type="text" placeholder="type starting stop" >
+							</div>
+							<label class="control-label" for="toStop">To Bus Stop</label>
+							<div class="input-prepend">
+								<span class="add-on"><i class="icon-flag"></i></span>
+								<input class="span2" id="toStop" type="text" placeholder="type destination stop" >
+							</div>
 						</div>
 					</div>
+					<p><a href="#" class="btn btn-large btn-primary" onclick="searchAtoB()">Search &raquo;</a></p>
+					<p><button type="button" class="btn" data-toggle="button" id="showAsCSList">Comma Separated List</button></p>
 				</div>
-				<p><a href="#" class="btn btn-large" onclick="searchAtoB()">Search &raquo;</a></p>
-			</div>
 
-			<div class="span9">
-				<div id="search-error" class="alert alert-error"></div>
-				<div id="search-alert" class="alert">Found <em><span id="search-results-count">NO</span></em> direct bus(es) between those stops.</div>
-				<div class="accordion" id="accordion1">
+				<div class="span9">
+					<div id="search-error" class="alert alert-error"></div>
+					<div id="search-alert" class="alert">Found <em><span id="search-results-count">NO</span></em> direct bus(es) between those stops.</div>
+					<div class="accordion" id="accordion1" >
 
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 
+
+	<div id="busnumber-section">
+		<div class="container">
+			<div class="row">
+				<div class="span3">
+					<div class="control-group">
+						<div class="controls">
+							<label class="control-label" for="busNumber">Bus Number</label>
+							<input class="span2" id="busNumber" type="text" placeholder="type bus number here" >
+						</div>
+					</div>
+					<p><a href="#" class="btn btn-large btn-primary" onclick="searchBusNumber()">Search &raquo;</a></p>
+				</div>
+
+				<div class="span9">
+					<div id="busnumber-search-error" class="alert alert-error">Bus Number search ... to be changed.</div>
+					<div id="busNumberDetails">
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 <script src="/staticweb/js/lib/jquery-1.9.1.min.js"></script>
 <script src="/staticweb/js/lib/sprintf-0.7-beta1.js"></script>
 <script src="/staticweb/js/lib/bootstrap/js/bootstrap.min.js"></script>
 <script>
+//globally used values
 var busStopNames = {{.BusStops}};
+var busNumbers = {{.BusNumbers}};
+
+//global setup
 $(document).ready(function() {
 	$("#fromStop, #toStop").typeahead({
 		minLength: 1,
 		source: busStopNames
 	});
+
+	$("#busNumber").typeahead({
+		minLength: 1,
+		source: busNumbers
+	});
+
 	$("#search-alert, #search-error").hide();
 	$("#fromStop").val(busStopNames[2]);
 	$("#toStop").val(busStopNames[1]);
+
+	$("#route-section").hide();
+	$("#busnumber-section").show();
+
+	$("#fromToNavBtn, #busNavBtn, #stopNavBtn").click(function(){
+		navBtnActivate("#" + this.id);
+	});
+
+	navBtnActivate("#fromToNavBtn");
 });
 
+function navBtnActivate(navBtnId) {
+	$("#fromToNavBtn, #busNavBtn, #stopNavBtn").removeClass("active");
+	$(navBtnId).addClass("active");
+
+	$("#route-section, #busnumber-section").hide();
+	switch(navBtnId) {
+		case "#fromToNavBtn":
+			$("#route-section").show();
+		break;
+		case "#busNavBtn":
+			$("#busnumber-section").show();
+		break;
+		case "#stopNavBtn":
+			alert("To be done!");
+		break;
+	}
+}
+
+// BEGIN - code for route section
+
 function searchAtoB() {
-	var from = $("#fromStop").val();
-	var to = $("#toStop").val();
+	$("#search-alert, #search-error, #accordion1").hide();
+
+	var from = $("#fromStop").val().trim();
+	var to = $("#toStop").val().trim();
+
+	if (from == "") {
+		$("#search-error").html("But you have to start from somewhere!").show();
+		return;
+	}
+
+	if (to == "") {
+		$("#search-error").html("But don't you want to get to another place?").show();
+		return;
+	}
+
+	if (from == to) {
+		$("#search-error").html("Yeah, really? You're just going to stand in one place! Or just go in circles!").show();
+		return;
+	}
+
+	if ($.inArray(from, busStopNames) < 0 ) {
+		$("#search-error").html("You can't just make up your own bus stop names! Invalid entry in From Bus Stop.").show();
+		return;
+	}
+
+	if ($.inArray(to, busStopNames) < 0 ) {
+		$("#search-error").html("You can't just make up your own bus stop names! Invalid entry in To Bus Stop.").show();
+		return;
+	}
+
 	var url = "/r?from=" + escape(from) + "&to=" + escape(to);
 	// alert("Calling url:" + url);
 
 	$("#accordion1").html("");
 
 	$.get(url, showSearchResults)
-	.fail(function(data) {
+	.error(function(xhr, status, error) {
 		$("#search-alert").hide();
-		$("#search-error").html(data);
-		$("#search-error").show();
+		$("#search-error").html("Application error: " + status + "- " + error).show();
 	});
 }
 
 var accordionString = '<div class="accordion-group">\
 						<div class="accordion-heading">\
-							<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapse%1$d">%2$s</a>\
+							<a class="accordion-toggle" data-toggle="collapse" data-target="#collapse%1$d" href="#collapse%1$d">%2$s</a>\
 						</div>\
-						<div id="collapse%1$d" class="accordion-body collapse">\
+						<div id="collapse%1$d" class="accordion-body collapse %4$s">\
 							<div class="accordion-inner">\
-								<ol>\
 								%3$s\
-								</ol>\
 							</div>\
 						</div>\
 					</div>';
@@ -113,7 +204,7 @@ function showSearchResults(data) {
 		if (jsonData != null) {
 			len = jsonData.length;
 		}
-		alert("Received: " + len + " items : " + data);
+		// alert("Received: " + len + " items : " + data);
 		$("#search-error").hide();
 		$("#search-alert").show();
 
@@ -127,19 +218,171 @@ function showSearchResults(data) {
 			$("#search-alert").addClass("alert alert-success");
 		}
 
+		var showAsCSList = false;
+		if ($("#showAsCSList").hasClass("active")) {
+			showAsCSList = true;
+		}
+
+		if ($("#allowMultipleExpand").hasClass("active")) {
+			$("#accordion1").attr("selector");
+		} else {
+			$("#accordion1").removeAttr("selector");
+		}
+
+		var autoOpenFirst = (len == 1);
+
+		var fromStop = $("#fromStop").val();
+		var toStop = $("#toStop").val();
 		var fullAccStr = "";
 		for (i=0; i<len; i++) {
 			var busStopsStr = "";
 			// alert("BusStopsA length: "+ Object.keys(jsonData[i].BusStopsA).length);
 			var j = 0;
+			var firstFound = false, secondFound = false;
 			for (key in jsonData[i].BusStopsA) {
-
-				busStopsStr += "<li>" + jsonData[i].BusStopsA[key] + "</li>";
+				var value = jsonData[i].BusStopsA[key];
+				var prefix = "", suffix = "";
+				if (value == fromStop ||  value == toStop) {
+					if (!firstFound) { firstFound = true; }
+					else { secondFound = true; }
+					prefix = "<b>";
+					suffix = "</b>";
+				}
+				if ((firstFound && !secondFound) || //for items from firstFound item upto but not including secondFound item
+					(secondFound && (value == fromStop || value == toStop))) { //
+					prefix = "<span style='color: green;'>" + prefix;
+					suffix = suffix + "</span>";
+				} else {
+					prefix = "<i>" + prefix;
+					suffix = suffix + "</i>";
+				}
+				if (showAsCSList) {
+					if (busStopsStr != "" ) {
+						busStopsStr += ", ";
+					}
+					busStopsStr += prefix + value + suffix;
+				} else {
+					busStopsStr += prefix + "<li>" + value + "</li>" + suffix;
+				}
 			}
-			fullAccStr += sprintf(accordionString, i+1, jsonData[i].Number, busStopsStr);
+			if (showAsCSList) {
+				//nothing to do here
+			} else {
+				busStopsStr = "<ol>" + busStopsStr + "</ol>";
+			}
+			fullAccStr += sprintf(accordionString, i+1, jsonData[i].Number, busStopsStr, autoOpenFirst?"in":"");
 		}
-		$("#accordion1").html(fullAccStr);
+		$("#accordion1").html(fullAccStr).show();
 }
+
+// END - code for route section
+
+
+// BEGIN - code for bus number section
+function searchBusNumber() {
+	$("#busnumber-search-error").hide();
+
+	var busNumber = $("#busNumber").val().trim();
+
+	if (busNumber == "") {
+		$("#busnumber-search-error").html("You need to give me something to search with!").show();
+		return;
+	}
+
+	if ($.inArray(busNumber, busNumbers) < 0 ) {
+		$("#search-error").html("You can't just make up your own bus! Invalid entry in Bus Number field.").show();
+		return;
+	}
+
+	var url = "/b?number=" + escape(busNumber);
+	// alert("Calling url:" + url);
+
+	$("#busNumberDetails").html("");
+
+	$.get(url, showBusNumberSearchResults)
+	.error(function(xhr, status, error) {
+		$("#busnumber-search-error").html("Application error: " + status + "- " + error).show();
+	});
+}
+
+function showBusNumberSearchResults(data) {
+	alert(data);
+		var jsonData = $.parseJSON(data);
+		var len = 0;
+		if (jsonData != null) {
+			len = jsonData.length;
+		}
+		// alert("Received: " + len + " items : " + data);
+		$("#search-error").hide();
+		$("#search-alert").show();
+
+		$("#search-alert").removeClass();
+		if (len == 0) {
+			$("#search-results-count").html("NO");
+			$("#search-alert").addClass("alert alert-warning");
+			return;
+		} else {
+			$("#search-results-count").html(len);
+			$("#search-alert").addClass("alert alert-success");
+		}
+
+		var showAsCSList = false;
+		if ($("#showAsCSList").hasClass("active")) {
+			showAsCSList = true;
+		}
+
+		if ($("#allowMultipleExpand").hasClass("active")) {
+			$("#accordion1").attr("selector");
+		} else {
+			$("#accordion1").removeAttr("selector");
+		}
+
+		var autoOpenFirst = (len == 1);
+
+		var fromStop = $("#fromStop").val();
+		var toStop = $("#toStop").val();
+		var fullAccStr = "";
+		for (i=0; i<len; i++) {
+			var busStopsStr = "";
+			// alert("BusStopsA length: "+ Object.keys(jsonData[i].BusStopsA).length);
+			var j = 0;
+			var firstFound = false, secondFound = false;
+			for (key in jsonData[i].BusStopsA) {
+				var value = jsonData[i].BusStopsA[key];
+				var prefix = "", suffix = "";
+				if (value == fromStop ||  value == toStop) {
+					if (!firstFound) { firstFound = true; }
+					else { secondFound = true; }
+					prefix = "<b>";
+					suffix = "</b>";
+				}
+				if ((firstFound && !secondFound) || //for items from firstFound item upto but not including secondFound item
+					(secondFound && (value == fromStop || value == toStop))) { //
+					prefix = "<span style='color: green;'>" + prefix;
+					suffix = suffix + "</span>";
+				} else {
+					prefix = "<i>" + prefix;
+					suffix = suffix + "</i>";
+				}
+				if (showAsCSList) {
+					if (busStopsStr != "" ) {
+						busStopsStr += ", ";
+					}
+					busStopsStr += prefix + value + suffix;
+				} else {
+					busStopsStr += prefix + "<li>" + value + "</li>" + suffix;
+				}
+			}
+			if (showAsCSList) {
+				//nothing to do here
+			} else {
+				busStopsStr = "<ol>" + busStopsStr + "</ol>";
+			}
+			fullAccStr += sprintf(accordionString, i+1, jsonData[i].Number, busStopsStr, autoOpenFirst?"in":"");
+		}
+		$("#accordion1").html(fullAccStr).show();
+}
+// END - code for bus number section
 
 </script>
 

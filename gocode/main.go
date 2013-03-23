@@ -25,6 +25,7 @@ func init() {
 
 	m.HandleFunc("/", rootHandler)
 	m.HandleFunc("/r", routeAtoBAjaxHandler).Methods("GET")
+	m.HandleFunc("/b", busNumberAjaxHandler).Methods("GET")
 	// m.HandleFunc("/{path:.*}", pageNotFoundHandler).Methods("GET")
 
 	http.Handle("/", m)
@@ -41,7 +42,18 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 		c.Errorf("main.go: rootHandler(): There were no bus stops.")
 	}
 
-	if err := templates.ExecuteTemplate(w, "index", struct{ BusStops []string }{busStopNames}); err != nil {
+	busNumbers := getBusNumbers()
+	if len(busNumbers) == 0 {
+		c.Errorf("main.go: rootHandler(): There were no bus numbers.")
+	}
+
+	if err := templates.ExecuteTemplate(w, "index", struct {
+		BusStops   []string
+		BusNumbers []string
+	}{
+		busStopNames,
+		busNumbers,
+	}); err != nil {
 		c.Errorf("main.go: rootHandler(): Error executing template: ", err)
 	}
 }
@@ -61,6 +73,24 @@ func routeAtoBAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	buses := getBuses(from, to)
 	writeSuccessJSONResponse(c, w, buses)
+
+}
+
+func busNumberAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	c := appengine.NewContext(r)
+
+	c.Infof("main.go: busNumberAjaxHandler(): Request received to url: %s", r.URL.RequestURI())
+
+	number := r.FormValue("number")
+	if len(number) == 0 {
+		c.Errorf("main.go: busNumberAjaxHandler(): Invalid input.  No bus number specified.")
+		http.Error(w, "Invalid input.  No bus number specified.", http.StatusBadRequest)
+		return
+	}
+
+	bus := getBus(number)
+	writeSuccessJSONResponse(c, w, bus)
 
 }
 
