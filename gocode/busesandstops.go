@@ -10,23 +10,23 @@ var busStops = []BusStop{
 var buses = []Bus{
 	Bus{
 		"292A",
-		map[string]string{
-			"1": "MG Road", "2": "Trinity Circle", "3": "Brigade Road",
+		[]string{
+			"MG Road", "Trinity Circle", "Brigade Road",
 		},
-		map[string]string{},
+		[]string{},
 	},
 	Bus{
 		"30",
-		map[string]string{
-			"1": "Jayanagar 5th Block", "2": "Trinity Circle", "3": "JP Nagar",
+		[]string{
+			"Jayanagar 5th Block", "Trinity Circle", "JP Nagar",
 		},
-		map[string]string{},
+		[]string{},
 	},
 	Bus{
 		"32",
-		map[string]string{
-			"1": "Jayanagar 5th Block", "2": "Trinity Circle", "3": "Brigade Road", "4": "KR Road", "5": "JP Nagar",
+		[]string{
+			"Jayanagar 5th Block", "Trinity Circle", "Brigade Road", "KR Road", "JP Nagar",
 		},
-		map[string]string{},
+		[]string{},
 	},
 }

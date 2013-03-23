@@ -56,7 +56,7 @@
 					<p><button type="button" class="btn" data-toggle="button" id="showAsCSList">Comma Separated List</button></p>
 				</div>
 
-				<div class="span9">
+				<div class="span6">
 					<div id="search-error" class="alert alert-error"></div>
 					<div id="search-alert" class="alert">Found <em><span id="search-results-count">NO</span></em> direct bus(es) between those stops.</div>
 					<div class="accordion" id="accordion1" >
@@ -81,7 +81,7 @@
 					<p><a href="#" class="btn btn-large btn-primary" onclick="searchBusNumber()">Search &raquo;</a></p>
 				</div>
 
-				<div class="span9">
+				<div class="span6">
 					<div id="busnumber-search-error" class="alert alert-error">Bus Number search ... to be changed.</div>
 					<div id="busNumberDetails">
 
@@ -114,6 +114,8 @@ $(document).ready(function() {
 	$("#fromStop").val(busStopNames[2]);
 	$("#toStop").val(busStopNames[1]);
 
+	$("#busnumber-search-error").hide();
+
 	$("#route-section").hide();
 	$("#busnumber-section").show();
 
@@ -122,6 +124,9 @@ $(document).ready(function() {
 	});
 
 	navBtnActivate("#fromToNavBtn");
+
+	//for now hide the Stop Nav Btn as there is no functionality
+	$("#stopNavBtn").hide();
 });
 
 function navBtnActivate(navBtnId) {
@@ -223,11 +228,11 @@ function showSearchResults(data) {
 			showAsCSList = true;
 		}
 
-		if ($("#allowMultipleExpand").hasClass("active")) {
-			$("#accordion1").attr("selector");
-		} else {
-			$("#accordion1").removeAttr("selector");
-		}
+		// if ($("#allowMultipleExpand").hasClass("active")) {
+		// 	$("#accordion1").attr("selector");
+		// } else {
+		// 	$("#accordion1").removeAttr("selector");
+		// }
 
 		var autoOpenFirst = (len == 1);
 
@@ -237,10 +242,12 @@ function showSearchResults(data) {
 		for (i=0; i<len; i++) {
 			var busStopsStr = "";
 			// alert("BusStopsA length: "+ Object.keys(jsonData[i].BusStopsA).length);
-			var j = 0;
+			// var j = 0;
 			var firstFound = false, secondFound = false;
-			for (key in jsonData[i].BusStopsA) {
-				var value = jsonData[i].BusStopsA[key];
+			// for (key in jsonData[i].BusStopsA) {
+			// 	var value = jsonData[i].BusStopsA[key];
+			for (j=0; j<jsonData[i].BusStopsA.length; j++) {
+				var value = jsonData[i].BusStopsA[j];
 				var prefix = "", suffix = "";
 				if (value == fromStop ||  value == toStop) {
 					if (!firstFound) { firstFound = true; }
@@ -305,82 +312,33 @@ function searchBusNumber() {
 	});
 }
 
+var busNumberHTMLStr = "<div>\
+<h3>%1$s</h3>\
+<ol>\
+%2$s\
+</ol>\
+</div>\
+";
+
 function showBusNumberSearchResults(data) {
-	alert(data);
-		var jsonData = $.parseJSON(data);
-		var len = 0;
-		if (jsonData != null) {
-			len = jsonData.length;
-		}
-		// alert("Received: " + len + " items : " + data);
-		$("#search-error").hide();
-		$("#search-alert").show();
+	// alert(data);
+	var jsonData = $.parseJSON(data);
+	var len = 0;
+	if (jsonData == null) {
+		$("#busnumber-search-error").html("Application error: it is showing up as empty data, but it shouldn't be.  Our fault.").show();
+		return;
+	}
+	$("#busnumber-search-error").hide();
 
-		$("#search-alert").removeClass();
-		if (len == 0) {
-			$("#search-results-count").html("NO");
-			$("#search-alert").addClass("alert alert-warning");
-			return;
-		} else {
-			$("#search-results-count").html(len);
-			$("#search-alert").addClass("alert alert-success");
-		}
-
-		var showAsCSList = false;
-		if ($("#showAsCSList").hasClass("active")) {
-			showAsCSList = true;
-		}
-
-		if ($("#allowMultipleExpand").hasClass("active")) {
-			$("#accordion1").attr("selector");
-		} else {
-			$("#accordion1").removeAttr("selector");
-		}
-
-		var autoOpenFirst = (len == 1);
-
-		var fromStop = $("#fromStop").val();
-		var toStop = $("#toStop").val();
-		var fullAccStr = "";
-		for (i=0; i<len; i++) {
-			var busStopsStr = "";
-			// alert("BusStopsA length: "+ Object.keys(jsonData[i].BusStopsA).length);
-			var j = 0;
-			var firstFound = false, secondFound = false;
-			for (key in jsonData[i].BusStopsA) {
-				var value = jsonData[i].BusStopsA[key];
-				var prefix = "", suffix = "";
-				if (value == fromStop ||  value == toStop) {
-					if (!firstFound) { firstFound = true; }
-					else { secondFound = true; }
-					prefix = "<b>";
-					suffix = "</b>";
-				}
-				if ((firstFound && !secondFound) || //for items from firstFound item upto but not including secondFound item
-					(secondFound && (value == fromStop || value == toStop))) { //
-					prefix = "<span style='color: green;'>" + prefix;
-					suffix = suffix + "</span>";
-				} else {
-					prefix = "<i>" + prefix;
-					suffix = suffix + "</i>";
-				}
-				if (showAsCSList) {
-					if (busStopsStr != "" ) {
-						busStopsStr += ", ";
-					}
-					busStopsStr += prefix + value + suffix;
-				} else {
-					busStopsStr += prefix + "<li>" + value + "</li>" + suffix;
-				}
-			}
-			if (showAsCSList) {
-				//nothing to do here
-			} else {
-				busStopsStr = "<ol>" + busStopsStr + "</ol>";
-			}
-			fullAccStr += sprintf(accordionString, i+1, jsonData[i].Number, busStopsStr, autoOpenFirst?"in":"");
-		}
-		$("#accordion1").html(fullAccStr).show();
+	var fullHTMLStr = "";
+	var busNumbersStr = "";
+	for (j=0; j<jsonData.BusStopsA.length; j++) {
+		var value = jsonData.BusStopsA[j];
+		var prefix = "", suffix = "";
+		busNumbersStr += "<li>" + value + "</li>";
+	}
+	fullHTMLStr = sprintf(busNumberHTMLStr, jsonData.Number, busNumbersStr);
+	$("#busNumberDetails").html(fullHTMLStr).show();
 }
 // END - code for bus number section
 

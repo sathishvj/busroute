@@ -14,8 +14,8 @@ type Bus struct {
 	Number string
 
 	//sometimes the stops on the up direction is different from the down direction
-	BusStopsA map[string]string //an ordered collection of stops
-	BusStopsB map[string]string //an ordered collection of stops in reverse direction
+	BusStopsA []string //an ordered collection of stops
+	BusStopsB []string //an ordered collection of stops in reverse direction
 }
 
 func getBusStopNames() []string {
