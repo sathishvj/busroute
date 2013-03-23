@@ -26,6 +26,7 @@ func init() {
 	m.HandleFunc("/", rootHandler)
 	m.HandleFunc("/r", routeAtoBAjaxHandler).Methods("GET")
 	m.HandleFunc("/b", busNumberAjaxHandler).Methods("GET")
+	m.HandleFunc("/f", feedbackAjaxHandler).Methods("POST")
 	// m.HandleFunc("/{path:.*}", pageNotFoundHandler).Methods("GET")
 
 	http.Handle("/", m)
@@ -92,6 +93,27 @@ func busNumberAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	bus := getBus(number)
 	writeSuccessJSONResponse(c, w, bus)
 
+}
+
+func feedbackAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	c := appengine.NewContext(r)
+
+	c.Infof("main.go: feedbackAjaxHandler(): Request received to url: %s", r.URL.RequestURI())
+
+	category := r.FormValue("feedbackCategory")
+	subcategory := r.FormValue("feedbackSubCategory")
+	reference := r.FormValue("feedbackReference")
+	details := r.FormValue("feedbackDetails")
+	email := r.FormValue("feedbackEmail")
+
+	err := addFeedback(c, category, subcategory, reference, details, email)
+	if err != nil {
+		http.Error(w, "Error saving feedback: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	writeSuccessJSONResponse(c, w, "Successfully added issue/feedback.")
 }
 
 func pageNotFoundHandler(w http.ResponseWriter, r *http.Request) {

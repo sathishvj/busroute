@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Bangalore Bus Routes</title>
+	<title>Bus In Bangalore</title>
 	<link rel="stylesheet" href="/staticweb/js/lib/bootstrap/css/bootstrap.min.css">
 	<link rel="stylesheet" href="/staticweb/css/styles.css">
 	<link rel="stylesheet" href="/staticweb/js/lib/bootstrap/css/bootstrap-responsive.min.css">
@@ -16,16 +16,18 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
 				</button>
 
 				<!-- <a class="brand" href="#">Bangalore Bus Routes</a> -->
-				<div class="brand">Bangalore Bus Routes</div>
+				<div class="brand">Bus In Bangalore</div>
 
 				<div class="nav-collapse collapse">
 					<ul class="nav">
 						<li id="fromToNavBtn" ><a href="#">From-To</a></li>
 						<li id="busNavBtn" ><a href="#">Bus</a></li>
 						<li id="stopNavBtn" ><a href="#">Stop</a></li>
+						<li id="feedbackNavBtn" ><a href="#">Issue/Feedback</a></li>
 					</ul>
 				</div><!--/.nav-collapse -->
 
@@ -90,6 +92,93 @@
 			</div>
 		</div>
 	</div>
+
+
+	<div id="feedback-section">
+		<div class="container">
+			<div class="row">
+				<div class="span6">
+					<form class="form-horizontal" id="feedbackForm" method="POST" action="/f">
+						<fieldset>
+
+							<!-- Hidden Fields -->
+							<input type="hidden" id="feedbackOrigin" name="feedbackOrigin" value="#fromToNavBtn"/>
+
+							<!-- Form Name -->
+
+							<!-- Select Basic -->
+							<div class="control-group">
+								<label class="control-label">Type</label>
+								<div class="controls">
+									<select id="feedbackCategory" name="feedbackCategory" class="input-xlarge">
+										<option>Issue: Bus Number/Route</option>
+										<option>Issue: Bus Stop</option>
+										<option>Feedback</option>
+									</select>
+								</div>
+							</div>
+
+							<!-- Select Basic -->
+							<div class="control-group">
+								<label class="control-label">Sub Category</label>
+								<div class="controls">
+									<select id="feedbackSubCategory" name="feedbackSubCategory" class="input-xlarge">
+										<option>Bus number is wrong</option>
+										<option>Invalid stop on route</option>
+										<option>Route no longer exists</option>
+										<option>There is a new bus route</option>
+										<option>Other</option>
+									</select>
+								</div>
+							</div>
+
+							<!-- Text input-->
+							<div class="control-group">
+								<label class="control-label">Bus Number/Stop Name</label>
+								<div class="controls">
+									<input id="feedbackReference" name="feedbackReference" type="text" placeholder="" class="input-xlarge">
+									<p class="help-block"></p>
+								</div>
+							</div>
+
+							<!-- Textarea -->
+							<div class="control-group">
+								<label class="control-label">Details</label>
+								<div class="controls">
+<!-- 									<div id="feedbackDetails" name="feedbackDetails" class="textarea">
+										<textarea></textarea>
+									</div>
+ -->
+										<textarea id="feedbackDetails" name="feedbackDetails" class="textarea"></textarea>
+								</div>
+							</div>
+
+							<!-- Text input-->
+							<div class="control-group">
+								<label class="control-label">(Optional) Email</label>
+								<div class="controls">
+									<input id="feedbackEmail" name="feedbackEmail" type="text" placeholder="type email here" class="input-xlarge">
+									<p class="help-block"></p>
+								</div>
+							</div>
+
+							<!-- Button (Double) -->
+							<div class="control-group">
+								<label class="control-label"></label>
+								<div class="controls">
+									<button id="feedbackSend" name="feedbackSend" class="btn btn-primary">Send Feedback</button>
+									<button id="feedbackCancel" name="feedbackCancel" class="btn btn-default">Cancel</button>
+								</div>
+							</div>
+
+						</fieldset>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
 <script src="/staticweb/js/lib/jquery-1.9.1.min.js"></script>
 <script src="/staticweb/js/lib/sprintf-0.7-beta1.js"></script>
 <script src="/staticweb/js/lib/bootstrap/js/bootstrap.min.js"></script>
@@ -116,10 +205,10 @@ $(document).ready(function() {
 
 	$("#busnumber-search-error").hide();
 
-	$("#route-section").hide();
-	$("#busnumber-section").show();
+	$("#route-section, #busnumber-section, #feedback-section").hide();
+	// $("#busnumber-section").show();
 
-	$("#fromToNavBtn, #busNavBtn, #stopNavBtn").click(function(){
+	$("#fromToNavBtn, #busNavBtn, #stopNavBtn, #feedbackNavBtn").click(function(){
 		navBtnActivate("#" + this.id);
 	});
 
@@ -130,10 +219,10 @@ $(document).ready(function() {
 });
 
 function navBtnActivate(navBtnId) {
-	$("#fromToNavBtn, #busNavBtn, #stopNavBtn").removeClass("active");
+	$("#fromToNavBtn, #busNavBtn, #stopNavBtn, #feedbackNavBtn").removeClass("active");
 	$(navBtnId).addClass("active");
 
-	$("#route-section, #busnumber-section").hide();
+	$("#route-section, #busnumber-section, #feedback-section").hide();
 	switch(navBtnId) {
 		case "#fromToNavBtn":
 			$("#route-section").show();
@@ -143,6 +232,9 @@ function navBtnActivate(navBtnId) {
 		break;
 		case "#stopNavBtn":
 			alert("To be done!");
+		break;
+		case "#feedbackNavBtn":
+			$("#feedback-section").show();
 		break;
 	}
 }
@@ -341,6 +433,44 @@ function showBusNumberSearchResults(data) {
 	$("#busNumberDetails").html(fullHTMLStr).show();
 }
 // END - code for bus number section
+
+// BEGIN - code for  feedback section
+$("#feedbackSend").click(function(event) {
+		// alert("Send clicked");
+		$.post("/f", $("#feedbackForm").serialize())
+		.done(function(data) {
+			alert("Thank you for your feedback!");
+			navigateOutOfFeedback();
+		})
+		.fail(function(data) {
+			alert("Error saving feedback: " + data);
+		});
+		return false;
+	});
+
+$("#feedbackCancel").click(function(event) {
+	navigateOutOfFeedback();
+  return false;
+});
+
+function navigateOutOfFeedback() {
+	$("#feedbackReference, #feedbackDetails").val("");
+
+	var origin = $("#feedbackOrigin").val();
+	if (origin != "" ) {
+		navBtnActivate(origin);
+	}
+}
+
+function navigateToFeedback(origin, category, subcategory, reference) {
+	$("#origin").val(origin);
+	$("#category").val(category);
+	$("#subcategory").val(subcategory);
+	$("#reference").val(reference);
+
+	navBtnActivate("#feedbackNavBtn");
+}
+// END - code for  feedback section
 
 </script>
 

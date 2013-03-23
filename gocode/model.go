@@ -1,7 +1,10 @@
 package main
 
 import (
+	"appengine"
+	"appengine/datastore"
 	"sort"
+	"time"
 )
 
 type BusStop struct {
@@ -16,6 +19,15 @@ type Bus struct {
 	//sometimes the stops on the up direction is different from the down direction
 	BusStopsA []string //an ordered collection of stops
 	BusStopsB []string //an ordered collection of stops in reverse direction
+}
+
+type Feedback struct {
+	Category    string
+	SubCategory string
+	Reference   string
+	Details     string
+	Email       string
+	At          time.Time
 }
 
 func getBusStopNames() []string {
@@ -68,4 +80,23 @@ func getBus(number string) *Bus {
 	}
 
 	return nil
+}
+
+func addFeedback(c appengine.Context, category, subcategory, reference, details, email string) error {
+	feedback := Feedback{
+		category,
+		subcategory,
+		reference,
+		details,
+		email,
+		time.Now(),
+	}
+
+	_, err := datastore.Put(c, datastore.NewIncompleteKey(c, "Feedback", nil), &feedback)
+	if err != nil {
+		c.Errorf("model.go: addFeedback: Error putting feedback: ", err.Error())
+	} else {
+		c.Infof("model.go: addFeedback: Successfully put feedback: ", feedback)
+	}
+	return err
 }
