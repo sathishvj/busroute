@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Bus In Bangalore</title>
+	<title>Bus in Blr</title>
 	<link rel="stylesheet" href="/staticweb/js/lib/bootstrap/css/bootstrap.min.css">
 	<link rel="stylesheet" href="/staticweb/css/styles.css">
 	<link rel="stylesheet" href="/staticweb/js/lib/bootstrap/css/bootstrap-responsive.min.css">
@@ -21,7 +21,7 @@
 				</button>
 
 				<!-- <a class="brand" href="#">Bangalore Bus Routes</a> -->
-				<div class="brand">Bus In Bangalore</div>
+				<div class="brand">Bus in Blr</div>
 
 				<div class="nav-collapse collapse">
 					<ul class="nav">
@@ -171,50 +171,64 @@
 
       <!-- Main hero unit for a primary marketing message or call to action -->
       <div class="hero-unit">
-        <h2>Take the bus!</h2>
+        <h2 style="color: lightseagreen;">Take the bus!</h2>
         <p>I mostly use the bus service in ಬೆಂಗಳೂರು/Bengaluru/Bangalore.  It's great becuase it gives me a lot more time to read and also be less stressed by avoiding driving.  Hopefully you will find this site useful for your own journeys here.</p>
-        <p><h4 style="color: light-blue;">I also actively seek your inputs and feedback to improve the accuracy of the data.</h4></p>
+        <p><h4 style="color: lightseagreen;">I also request your inputs and feedback to improve the accuracy of the data.</h4></p>
       </div>
 
       <!-- Example row of columns -->
       <div class="row">
         <div class="span4">
-          <h2>Heading</h2>
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-          <p><a class="btn" href="#">View details &raquo;</a></p>
+          <h2>Thank you!</h2>
+          <p>If you are here, thank you for your continued patronage.  If you think the site is useful, kindly spread the word and let others know about it.  The more people we have using the site, it is bound to result in better data accuracy through user feedback.</p>
         </div>
         <div class="span4">
-          <h2>Heading</h2>
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-          <p><a class="btn" href="#">View details &raquo;</a></p>
+          <h2>Discuss</h2>
+          <p>Need more help from the community?  Discuss in our forum at <a href="" target="_blank">Google Groups</a>.</p>
+          <p><a class="btn" href="#">Go to Bus in Blr Forum</a></p>
        </div>
         <div class="span4">
-          <h2>Heading</h2>
-          <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-          <p><a class="btn" href="#">View details &raquo;</a></p>
+          <h2>Volunteer</h2>
+          <p>To maintain this site and check the accuracy of the data is a time consuming task.  Would you be able to help me improve the data on the site? For now I intend to post in the <a href="" target="_blank">forum</a> with data and feedback that I need validated, verified, and improved.  Please help me on that with your inputs there.</p>
         </div>
       </div>
 
       <div class="row">
         <div class="span4">
           <h2>Technologies</h2>
-          <p>Go Lang, HTML/CSS, JQuery, Bootstrap, Google AppEngine</p>
+          <p><a href="http://golangtutorials.blogspot.fr/2011/05/table-of-contents.html" target="_blank">Go Lang</a>, <a href="https://plus.google.com/communities/116635345018496310983" target="_blank">HTML/CSS</a>, <a href="https://plus.google.com/communities/116635345018496310983" target="_blank">JQuery</a>, <a href="http://twitter.github.com/bootstrap/?v=2.0" target="_blank">Bootstrap</a>, <a href="https://developers.google.com/appengine/" target="_blank">Google AppEngine</a></p>
+          <p>Yes, promoting some personally preferred technologies and communities.  :-)</p>
         </div>
         <div class="span4">
           <h2>Data</h2>
-          <p>As of now, most of the data has been obtained from certain forums and scraping some of the data from other sites.  Please refer the site that I and many others have gratefully used a lot: <a href="http://narasimhadatta.info">narasimhadatta.info</a></p>
+          <p>As of now, most of the data has been obtained from certain forums and scraping some of the data from other sites.  Please refer the site that I, and many others, have gratefully used a lot: <a href="http://narasimhadatta.info" targe="_blank">narasimhadatta.info</a></p>
        </div>
         <div class="span4">
           <h2>Source Code</h2>
           <p>Even as of now the source code is open sourced.  However, I'll link it from here after I've cleaned up the code and the file structures a bit.</p>
         </div>
       </div>
+      <hr>
 
+			<div class="row">
+				<div class="span12">
+					<h3>Release notes</h3>
+					<ul>
+						<li>
+							<h5>Version 0.1, 2013/03/24</h5>
+							<ul>
+								<li>First release.</li>
+								<li>Can search by bus number, can search for direct buses between stops.</li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
 
       <hr>
 
       <footer>
-        <p>created by sathishvj</p>
+        <p>created by <a href="http://www.sathishvj.com">sathishvj</a></p>
       </footer>
 
     </div> <!-- /container -->
@@ -232,12 +246,19 @@ var busNumbers = {{.BusNumbers}};
 $(document).ready(function() {
 	$("#fromStop, #toStop").typeahead({
 		minLength: 1,
+		items: 12,
 		source: busStopNames
 	});
 
 	$("#busNumber").typeahead({
 		minLength: 1,
-		source: busNumbers
+		items: 12,
+		source: busNumbers,
+		updater: function(item) {
+			$("#busNumber").val(item);
+			searchBusNumber();
+			return item;
+		}
 	});
 
 	$("#search-alert, #search-error").hide();
