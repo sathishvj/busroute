@@ -1,0 +1,36 @@
+	[
+		{
+			"Name": "MG Road",
+			"Details": "",
+			"Locations": [
+				{
+					"Name": "",
+					"Latitude": "0.0",
+					"Longitude": "0.0"
+				}
+			]
+		},
+		{
+			"Name": "Brigade Road",
+			"Details": "",
+			"Locations": [
+				{
+					"Name": "",
+					"Latitude": "0.0",
+					"Longitude": "0.0"
+				}
+			]
+		},
+		{
+			"Name": "JP Nagar",
+			"Details": "",
+			"Locations": [
+			]
+		},
+		{
+			"Name": "Jayanagar 5th Block",
+			"Details": "",
+			"Locations": [
+			]
+		}
+	]

@@ -1,0 +1,17 @@
+[
+	{
+		"Number": "292A",
+		"BusStopsA": ["MG Road", "Brigade Road", "JP Nagar"],
+		"BusStopsB": []
+	},
+	{
+		"Number": "30",
+		"BusStopsA": ["Jayanagar 5th Block", "Trinity Circle", "JP Nagar"],
+		"BusStopsB": []
+	},
+	{
+		"Number": "32",
+		"BusStopsA": ["Jayanagar 5th Block", "Trinity Circle", "Brigade Road", "KR Road", "JP Nagar"],
+		"BusStopsB": []
+	}
+]

@@ -3,22 +3,32 @@ package main
 import (
 	"appengine"
 	"appengine/datastore"
+	"encoding/json"
+	"fmt"
+	"io"
+	"os"
 	"sort"
 	"time"
 )
 
-type BusStop struct {
+type Location struct {
 	Name                string
-	Detail              string //to help identify the place.  Eg. on same side as ABC hospital
-	Latitude, Longitude float32
+	Latitude, Longitude float32 `json:",string"`
+}
+
+type BusStop struct {
+	Name      string
+	Details   string     //to help identify the place.  Eg. on same side as ABC hospital
+	Locations []Location //because there could be multiple bus stops with the same name
+
 }
 
 type Bus struct {
 	Number string
 
 	//sometimes the stops on the up direction is different from the down direction
-	BusStopsA []string //an ordered collection of stops
-	BusStopsB []string //an ordered collection of stops in reverse direction
+	BusStopsA []string //an ordered collection of stops. Each string corresponds to BusStop.Name
+	BusStopsB []string //an ordered collection of stops in reverse direction. Each string corresponds to BusStop.Name
 }
 
 type Feedback struct {
@@ -28,6 +38,67 @@ type Feedback struct {
 	Details     string
 	Email       string
 	At          time.Time
+}
+
+//global variables that we will have to load once
+var busStops []BusStop
+var buses []Bus
+
+func initData() error {
+	//Load data in the busstops file.
+
+	var err error
+
+	busStopsBuf := readFile("gocode/busstops.json")
+	fmt.Println("Info: model.go: initData(): Full busstops file as bytes: ", string(busStopsBuf))
+	if err = json.Unmarshal(busStopsBuf, &busStops); err != nil {
+		panic("Error: model.go: initData(): Error unmarshaling busstops data: " + err.Error())
+	}
+	fmt.Println("Info: model.go: initData(): Full busstops file as objects: ", busStops)
+
+	busesBuf := readFile("gocode/buses.json")
+	fmt.Println("Info: model.go: initData(): Full busstops file as bytes: ", string(busesBuf))
+	if err = json.Unmarshal(busesBuf, &buses); err != nil {
+		panic("Error: model.go: initData(): Error unmarshaling buses data: " + err.Error())
+	}
+	fmt.Println("Info: model.go: initData(): Full busstops file as objects: ", buses)
+
+	return nil
+}
+
+func readFile(path string) []byte {
+	// file, err := os.OpenFile("gocode/busstops.json", os.O_RDONLY, 0666)
+	file, err := os.OpenFile(path, os.O_RDONLY, 0666)
+	if err != nil {
+		// fmt.Printf("model.go: readFile(): Error opening %s: %s\n", path, err.Error())
+		// return err
+		panic("model.go: readFile(): Error opening " + path + ":" + err.Error())
+	}
+
+	defer func() {
+		if file.Close() != nil {
+			panic(err)
+		}
+	}()
+
+	var fullBuf []byte
+	tempBuf := make([]byte, 1024)
+	n := 0
+	for {
+		n, err = file.Read(tempBuf)
+		if err != nil && err != io.EOF {
+			panic(err)
+		}
+		if n == 0 {
+			break
+		}
+		//need to reslice the buffer using the number of bytes actually read.
+		tempBuf = tempBuf[0:n]
+
+		fullBuf = append(fullBuf, tempBuf...)
+	}
+
+	return fullBuf
 }
 
 func getBusStopNames() []string {

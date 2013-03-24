@@ -7,8 +7,6 @@ import (
 	"github.com/gorilla/mux"
 	"html/template"
 	"net/http"
-	// "appengine/datastore"
-	// "time"
 )
 
 var templates *template.Template
@@ -19,6 +17,11 @@ func init() {
 	templates, err = template.ParseGlob("templates/*.tmpl")
 	if err != nil {
 		panic("main.go: init(): error parsing templates: " + err.Error())
+	}
+
+	err = initData() //read in all the data from the json files
+	if err != nil {
+		panic("main.go: init(): error initializing data: " + err.Error())
 	}
 
 	m := mux.NewRouter()
