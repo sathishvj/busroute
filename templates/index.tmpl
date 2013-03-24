@@ -3,6 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Bus in Blr</title>
 	<link rel="stylesheet" href="/staticweb/js/lib/bootstrap/css/bootstrap.min.css">
 	<link rel="stylesheet" href="/staticweb/css/styles.css">
@@ -12,8 +13,7 @@
 	<div class="navbar navbar-inverse navbar-fixed-top">
 		<div class="navbar-inner">
 			<div class="container">
-				<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-					<span class="icon-bar"></span>
+				<button id="navBarCollapseBtn" type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
@@ -21,9 +21,9 @@
 				</button>
 
 				<!-- <a class="brand" href="#">Bangalore Bus Routes</a> -->
-				<div class="brand">Bus in Blr</div>
+				<div class="brand" style="color: lightseagreen;">Bus in Blr</div>
 
-				<div class="nav-collapse collapse">
+				<div id="navItemsCollapse" class="nav-collapse collapse">
 					<ul class="nav">
 						<li id="fromToNavBtn" ><a href="#">From-To</a></li>
 						<li id="busNavBtn" ><a href="#">Bus</a></li>
@@ -63,7 +63,7 @@
 
 				<div class="span6">
 					<div id="search-error" class="alert alert-error"></div>
-					<div id="search-alert" class="alert">Found <em><span id="search-results-count">NO</span></em> direct bus(es) between those stops.</div>
+					<div id="search-alert" class="alert">Found <em><b><span id="search-results-count">NO</span></b></em> direct bus(es) between those stops.</div>
 					<div id="search-results-list" class=""></div><p>
 					<div class="accordion" id="accordion1" >
 
@@ -171,9 +171,9 @@
 
       <!-- Main hero unit for a primary marketing message or call to action -->
       <div class="hero-unit">
-        <h2 style="color: lightseagreen;">Take the bus!</h2>
+        <h2 style="color: lightseagreen;">Bus in Blr</h2>
+        <h3 style="color: lightseagreen;">Take the bus!</h3>
         <p>I mostly use the bus service in ಬೆಂಗಳೂರು/Bengaluru/Bangalore.  It's great becuase it gives me a lot more time to read and also be less stressed by avoiding driving.  Hopefully you will find this site useful for your own journeys here.</p>
-        <p><h4 style="color: lightseagreen;">I also request your inputs and feedback to improve the accuracy of the data.</h4></p>
       </div>
 
       <!-- Example row of columns -->
@@ -185,7 +185,7 @@
         <div class="span4">
           <h2>Discuss</h2>
           <p>Need more help from the community?  Discuss in our forum at <a href="https://groups.google.com/forum/?fromgroups#!forum/bus-in-blr" target="_blank">Google Groups</a>.</p>
-          <p><a class="btn" href="https://groups.google.com/forum/?fromgroups#!forum/bus-in-blr">Go to Bus in Blr Forum</a></p>
+          <p><a class="btn" href="https://groups.google.com/forum/?fromgroups#!forum/bus-in-blr" target="_blank">Go to Bus in Blr Forum</a></p>
        </div>
         <div class="span4">
           <h2>Volunteer</h2>
@@ -201,7 +201,7 @@
         </div>
         <div class="span4">
           <h2>Data</h2>
-          <p>As of now, most of the data has been obtained from certain forums and scraping some of the data from other sites.  Please refer the site that I, and many others, have gratefully used a lot: <a href="http://narasimhadatta.info" targe="_blank">narasimhadatta.info</a></p>
+          <p>As of now, most of the data has been obtained from certain forums and scraping some of the data from other sites.  With regular user feedback and updates, I expect the data will grow to be accurate.  It will also be available with the open source code.</p>
        </div>
         <div class="span4">
           <h2>Source Code</h2>
@@ -218,7 +218,8 @@
 							<h5>Version 0.1, 2013/03/24</h5>
 							<ul>
 								<li>First release.</li>
-								<li>Can search by bus number, can search for direct buses between stops.</li>
+								<li>Allows search by bus number and for direct buses between stops.</li>
+								<li>Works great on mobile too with responsive UI.</li>
 							</ul>
 						</li>
 					</ul>
@@ -262,6 +263,7 @@ $(document).ready(function() {
 	});
 
 	$("#search-alert, #search-error").hide();
+	$("#search-results-list").html("");
 	// $("#fromStop").val(busStopNames[2]);
 	// $("#toStop").val(busStopNames[1]);
 
@@ -289,9 +291,16 @@ $(document).ready(function() {
 		$("#toStop").val(temp);
 		searchAtoB();
 	});
+
 });
 
 function navBtnActivate(navBtnId) {
+	$('.nav-collapse').collapse("hide");
+
+	if ($(navBtnId).hasClass("active")) {
+		return;
+	}
+
 	$("#fromToNavBtn, #busNavBtn, #stopNavBtn, #feedbackNavBtn, #aboutNavBtn").removeClass("active");
 	$(navBtnId).addClass("active");
 
@@ -313,12 +322,19 @@ function navBtnActivate(navBtnId) {
 			$("#about-section").show();
 		break;
 	}
+
+	//if navbar is on small screen and is in expanded mode, then collapse it
+	// if ($("#navItemsCollapse").hasClass("in")) {
+		// $("#navBarCollapseBtn").addClass("collapsed");
+		// $("#navItemsCollapse").removeClass("in");
+	// }
 }
 
 // BEGIN - code for route section
 
 function searchAtoB() {
 	$("#search-alert, #search-error, #accordion1").hide();
+	$("#search-results-list").html("");
 
 	var from = $("#fromStop").val().trim();
 	var to = $("#toStop").val().trim();
