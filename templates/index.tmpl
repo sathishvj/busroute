@@ -63,7 +63,7 @@
 
 				<div class="span6">
 					<div id="search-error" class="alert alert-error"></div>
-					<div id="search-alert" class="alert">Found <em><b><span id="search-results-count">NO</span></b></em> direct bus(es) between those stops.</div>
+					<div id="search-alert" class="alert">Found <em><b><span id="search-results-count">NO</span></b></em> direct bus(es).</div>
 					<div id="search-results-list" class=""></div><p>
 					<div class="accordion" id="accordion1" >
 
@@ -290,6 +290,10 @@ $(document).ready(function() {
 		$("#fromStop").val($("#toStop").val());
 		$("#toStop").val(temp);
 		searchAtoB();
+	});
+
+	$("input[type=text]").click(function() {
+		$(this).select();
 	});
 
 });
