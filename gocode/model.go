@@ -32,12 +32,11 @@ type Bus struct {
 }
 
 type Feedback struct {
-	Category    string
-	SubCategory string
-	Reference   string
-	Details     string
-	Email       string
-	At          time.Time
+	Subject   string
+	Reference string
+	Details   string
+	Email     string
+	At        time.Time
 }
 
 //global variables that we will have to load once
@@ -112,21 +111,40 @@ func getBusStopNames() []string {
 
 func getBuses(from, to string) []Bus {
 	var selBuses []Bus
+
 	for _, bus := range buses {
-		fromExists, toExists := false, false
+		fromExists, toExists, reverse := false, false, false
+
 		for _, stopName := range bus.BusStopsA {
 			if stopName == from {
 				fromExists = true
 			}
 			if stopName == to {
 				toExists = true
+				if toExists && !fromExists { //we need to reverse the order of stops
+					reverse = true
+				}
 			}
 
 			if fromExists && toExists {
-				selBuses = append(selBuses, bus)
+				if reverse {
+					var revStops []string
+					for j := len(bus.BusStopsA) - 1; j >= 0; j = j - 1 {
+						revStops = append(revStops, bus.BusStopsA[j])
+					}
+					revBus := Bus{
+						bus.Number,
+						revStops,
+						bus.BusStopsB, //for now just include this
+					}
+					selBuses = append(selBuses, revBus)
+				} else {
+					selBuses = append(selBuses, bus)
+				}
 				break
 			}
 		}
+
 	}
 
 	return selBuses
@@ -153,10 +171,9 @@ func getBus(number string) *Bus {
 	return nil
 }
 
-func addFeedback(c appengine.Context, category, subcategory, reference, details, email string) error {
+func addFeedback(c appengine.Context, subject, reference, details, email string) error {
 	feedback := Feedback{
-		category,
-		subcategory,
+		subject,
 		reference,
 		details,
 		email,

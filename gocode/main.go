@@ -104,13 +104,12 @@ func feedbackAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	c.Infof("main.go: feedbackAjaxHandler(): Request received to url: %s", r.URL.RequestURI())
 
-	category := r.FormValue("feedbackCategory")
-	subcategory := r.FormValue("feedbackSubCategory")
+	subject := r.FormValue("feedbackSubject")
 	reference := r.FormValue("feedbackReference")
 	details := r.FormValue("feedbackDetails")
 	email := r.FormValue("feedbackEmail")
 
-	err := addFeedback(c, category, subcategory, reference, details, email)
+	err := addFeedback(c, subject, reference, details, email)
 	if err != nil {
 		http.Error(w, "Error saving feedback: "+err.Error(), http.StatusInternalServerError)
 		return

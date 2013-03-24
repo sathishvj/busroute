@@ -17,6 +17,7 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
 				</button>
 
 				<!-- <a class="brand" href="#">Bangalore Bus Routes</a> -->
@@ -28,6 +29,7 @@
 						<li id="busNavBtn" ><a href="#">Bus</a></li>
 						<li id="stopNavBtn" ><a href="#">Stop</a></li>
 						<li id="feedbackNavBtn" ><a href="#">Issue/Feedback</a></li>
+						<li id="aboutNavBtn" ><a href="#">About</a></li>
 					</ul>
 				</div><!--/.nav-collapse -->
 
@@ -56,11 +58,13 @@
 					</div>
 					<p><a href="#" class="btn btn-large btn-primary" onclick="searchAtoB()">Search &raquo;</a></p>
 					<p><button type="button" class="btn" data-toggle="button" id="showAsCSList">Comma Separated List</button></p>
+					<p><button type="button" class="btn" id="reverseFromTo">Reverse From To</button></p>
 				</div>
 
 				<div class="span6">
 					<div id="search-error" class="alert alert-error"></div>
 					<div id="search-alert" class="alert">Found <em><span id="search-results-count">NO</span></em> direct bus(es) between those stops.</div>
+					<div id="search-results-list" class=""></div><p>
 					<div class="accordion" id="accordion1" >
 
 					</div>
@@ -108,26 +112,14 @@
 
 							<!-- Select Basic -->
 							<div class="control-group">
-								<label class="control-label">Type</label>
-								<div class="controls">
-									<select id="feedbackCategory" name="feedbackCategory" class="input-xlarge">
-										<option>Issue: Bus Number/Route</option>
-										<option>Issue: Bus Stop</option>
-										<option>Feedback</option>
-									</select>
-								</div>
-							</div>
-
-							<!-- Select Basic -->
-							<div class="control-group">
 								<label class="control-label">Sub Category</label>
 								<div class="controls">
-									<select id="feedbackSubCategory" name="feedbackSubCategory" class="input-xlarge">
-										<option>Bus number is wrong</option>
-										<option>Invalid stop on route</option>
-										<option>Route no longer exists</option>
-										<option>There is a new bus route</option>
+									<select id="feedbackSubject" name="feedbackSubject" class="input-xlarge">
 										<option>Other</option>
+										<option>Wrong stop on route</option>
+										<option>Route no longer exists</option>
+										<option>New stop to be added on route</option>
+										<option>Missing bus number</option>
 									</select>
 								</div>
 							</div>
@@ -145,10 +137,6 @@
 							<div class="control-group">
 								<label class="control-label">Details</label>
 								<div class="controls">
-<!-- 									<div id="feedbackDetails" name="feedbackDetails" class="textarea">
-										<textarea></textarea>
-									</div>
- -->
 										<textarea id="feedbackDetails" name="feedbackDetails" class="textarea"></textarea>
 								</div>
 							</div>
@@ -178,6 +166,59 @@
 		</div>
 	</div>
 
+	<div id="about-section">
+		<div class="container">
+
+      <!-- Main hero unit for a primary marketing message or call to action -->
+      <div class="hero-unit">
+        <h2>Take the bus!</h2>
+        <p>I mostly use the bus service in ಬೆಂಗಳೂರು/Bengaluru/Bangalore.  It's great becuase it gives me a lot more time to read and also be less stressed by avoiding driving.  Hopefully you will find this site useful for your own journeys here.</p>
+        <p><h4 style="color: light-blue;">I also actively seek your inputs and feedback to improve the accuracy of the data.</h4></p>
+      </div>
+
+      <!-- Example row of columns -->
+      <div class="row">
+        <div class="span4">
+          <h2>Heading</h2>
+          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+          <p><a class="btn" href="#">View details &raquo;</a></p>
+        </div>
+        <div class="span4">
+          <h2>Heading</h2>
+          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+          <p><a class="btn" href="#">View details &raquo;</a></p>
+       </div>
+        <div class="span4">
+          <h2>Heading</h2>
+          <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+          <p><a class="btn" href="#">View details &raquo;</a></p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="span4">
+          <h2>Technologies</h2>
+          <p>Go Lang, HTML/CSS, JQuery, Bootstrap, Google AppEngine</p>
+        </div>
+        <div class="span4">
+          <h2>Data</h2>
+          <p>As of now, most of the data has been obtained from certain forums and scraping some of the data from other sites.  Please refer the site that I and many others have gratefully used a lot: <a href="http://narasimhadatta.info">narasimhadatta.info</a></p>
+       </div>
+        <div class="span4">
+          <h2>Source Code</h2>
+          <p>Even as of now the source code is open sourced.  However, I'll link it from here after I've cleaned up the code and the file structures a bit.</p>
+        </div>
+      </div>
+
+
+      <hr>
+
+      <footer>
+        <p>created by sathishvj</p>
+      </footer>
+
+    </div> <!-- /container -->
+	</div>
 
 <script src="/staticweb/js/lib/jquery-1.9.1.min.js"></script>
 <script src="/staticweb/js/lib/sprintf-0.7-beta1.js"></script>
@@ -200,15 +241,15 @@ $(document).ready(function() {
 	});
 
 	$("#search-alert, #search-error").hide();
-	$("#fromStop").val(busStopNames[2]);
-	$("#toStop").val(busStopNames[1]);
+	// $("#fromStop").val(busStopNames[2]);
+	// $("#toStop").val(busStopNames[1]);
 
 	$("#busnumber-search-error").hide();
 
-	$("#route-section, #busnumber-section, #feedback-section").hide();
+	$("#route-section, #busnumber-section, #feedback-section", "#about-section").hide();
 	// $("#busnumber-section").show();
 
-	$("#fromToNavBtn, #busNavBtn, #stopNavBtn, #feedbackNavBtn").click(function(){
+	$("#fromToNavBtn, #busNavBtn, #stopNavBtn, #feedbackNavBtn, #aboutNavBtn").click(function(){
 		navBtnActivate("#" + this.id);
 	});
 
@@ -216,13 +257,24 @@ $(document).ready(function() {
 
 	//for now hide the Stop Nav Btn as there is no functionality
 	$("#stopNavBtn").hide();
+
+	$("#showAsCSList").click(function(){
+		searchAtoB();
+	});
+
+	$("#reverseFromTo").click(function(){
+		temp = $("#fromStop").val();
+		$("#fromStop").val($("#toStop").val());
+		$("#toStop").val(temp);
+		searchAtoB();
+	});
 });
 
 function navBtnActivate(navBtnId) {
-	$("#fromToNavBtn, #busNavBtn, #stopNavBtn, #feedbackNavBtn").removeClass("active");
+	$("#fromToNavBtn, #busNavBtn, #stopNavBtn, #feedbackNavBtn, #aboutNavBtn").removeClass("active");
 	$(navBtnId).addClass("active");
 
-	$("#route-section, #busnumber-section, #feedback-section").hide();
+	$("#route-section, #busnumber-section, #feedback-section, #about-section").hide();
 	switch(navBtnId) {
 		case "#fromToNavBtn":
 			$("#route-section").show();
@@ -235,6 +287,9 @@ function navBtnActivate(navBtnId) {
 		break;
 		case "#feedbackNavBtn":
 			$("#feedback-section").show();
+		break;
+		case "#aboutNavBtn":
+			$("#about-section").show();
 		break;
 	}
 }
@@ -275,7 +330,7 @@ function searchAtoB() {
 	var url = "/r?from=" + escape(from) + "&to=" + escape(to);
 	// alert("Calling url:" + url);
 
-	$("#accordion1").html("");
+	$("#accordion1, #search-results-list").html("");
 
 	$.get(url, showSearchResults)
 	.error(function(xhr, status, error) {
@@ -331,6 +386,7 @@ function showSearchResults(data) {
 		var fromStop = $("#fromStop").val();
 		var toStop = $("#toStop").val();
 		var fullAccStr = "";
+		var numberListStr = "";
 		for (i=0; i<len; i++) {
 			var busStopsStr = "";
 			// alert("BusStopsA length: "+ Object.keys(jsonData[i].BusStopsA).length);
@@ -370,8 +426,13 @@ function showSearchResults(data) {
 				busStopsStr = "<ol>" + busStopsStr + "</ol>";
 			}
 			fullAccStr += sprintf(accordionString, i+1, jsonData[i].Number, busStopsStr, autoOpenFirst?"in":"");
+
+			//create a list of all found bus numbers also
+			if (numberListStr != "") { numberListStr += ", "}
+			numberListStr += jsonData[i].Number;
 		}
 		$("#accordion1").html(fullAccStr).show();
+		$("#search-results-list").html(numberListStr).show();
 }
 
 // END - code for route section
