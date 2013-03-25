@@ -65,8 +65,56 @@
 					<div id="search-error" class="alert alert-error"></div>
 					<div id="search-alert" class="alert">Found <em><b><span id="search-results-count">NO</span></b></em> direct bus(es).</div>
 					<div id="search-results-list" class=""></div><p>
+					<div id="myCarousel" class="carousel slide">
+						<ol class="carousel-indicators">
+							<li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+							<li data-target="#myCarousel" data-slide-to="1"></li>
+							<li data-target="#myCarousel" data-slide-to="2"></li>
+						</ol>
+						<!-- Carousel items -->
+						<div class="carousel-inner">
+							<div class="active item">
+								<div class="hero-unit">
+									<h4 style="color: lightseagreen;">New Feature!</h4>
+									<h2 style="color: lightseagreen;">Bus Stop Name Suggestions</h2>
+									<p>With Indian <b>names transliterated to English</b>, it is occasionally difficult to guess the correct spelling.  Beyond the name auto-complete in the input boxes, the app will now also suggest possible 'fuzzy' match alternatives.  This could be great for mobile users.</p>
+									<p>And it is done entirely locally without using your internet!  So <b style="color: lightseagreen">Bus in Blr</b> will <u>still remain super fast and light on your data connection</u>.</p>
+									<h4 style="color: lightseagreen;">Journey On!</h4>
+								</div>
+							</div>
+							<div class="item">
+								<div class="hero-unit">
+									<h4 style="color: lightseagreen;">I Need Your Help!</h4>
+									<h2 style="color: lightseagreen;">Bus Timings Needed</h2>
+									<p>To improve your experience of <b style="color: lightseagreen">Bus in Blr</b>, I need the timings for all the bus routes.  So far I have only the Vayu Vajra bus service details from the bmtcinfo.com site.  And very little else.</p>
+									<p>If you have access to this data or know somebody personally whom we can reach out to for this data, kindly contact me at sathishvj@gmail.com.</p>
+								</div>
+							</div>
+							<div class="item">
+								<div class="hero-unit">
+									<h4 style="color: lightseagreen;">Discuss with others!</h4>
+									<h2 style="color: lightseagreen;">Join The Community</h2>
+									<p>You could get help from others using the same bus services as you, and you could contribute equally in return.</p>
+									<p>It will also be a place for developers and other open source contributors to extend the app once I formally make it open sourced.</p>
+									<p><a class="btn btn-default btn-large" href="https://groups.google.com/forum/?fromgroups#!forum/bus-in-blr" target="_blank">Go to <b style="color: lightseagreen">Bus in Blr</b> Google Groups</a></p>
+								</div>
+							</div>
+						</div>
+						<!-- Carousel nav -->
+						<a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+						<a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
+					</div>
 					<div class="accordion" id="accordion1" >
 
+					</div>
+					<div id="suggestedStopNamesWrapper">
+						<div id="suggestedStopNames">
+
+						</div>
+						<div>
+							<hr>
+							<span style="font-size: 11px;">Suggestions are automatically generated using the <a href="http://en.wikipedia.org/wiki/Jaro%E2%80%93Winkler_distance" target="_blank">Jaro–Winkler distance</a> algorithm implemeted <a href="https://github.com/NaturalNode/natural" target="_blank">here</a>.</span>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -215,6 +263,12 @@
 					<h3>Release notes</h3>
 					<ul>
 						<li>
+							<h5>Version 0.2, 2013/03/26</h5>
+							<ul>
+								<li>Added stop name suggestions for misspelt names.</li>
+								<li>Minor spelling and phrase changes in About page.</li>
+								<li>Added a carousel on main page to display important information.</li>
+							</ul>
 							<h5>Version 0.1, 2013/03/24</h5>
 							<ul>
 								<li>First release.</li>
@@ -238,6 +292,7 @@
 <script src="/staticweb/js/lib/jquery-1.9.1.min.js"></script>
 <script src="/staticweb/js/lib/sprintf-0.7-beta1.js"></script>
 <script src="/staticweb/js/lib/bootstrap/js/bootstrap.min.js"></script>
+<script src="/staticweb/js/lib/jaro-winkler_distance.js"></script>
 <script>
 //globally used values
 var busStopNames = {{.BusStops}};
@@ -262,7 +317,9 @@ $(document).ready(function() {
 		}
 	});
 
-	$("#search-alert, #search-error").hide();
+	$('#myCarousel').carousel();
+
+	$("#search-alert, #search-error, #suggestedStopNamesWrapper").hide();
 	$("#search-results-list").html("");
 	// $("#fromStop").val(busStopNames[2]);
 	// $("#toStop").val(busStopNames[1]);
@@ -294,6 +351,19 @@ $(document).ready(function() {
 
 	$("input[type=text]").click(function() {
 		$(this).select();
+	});
+
+	$(document).on( 'click', '.suggestedStopName', function(e) {
+		// alert("clicked");
+		var clickedItem = e.target;
+		// alert($(clickedItem).html())
+		var inputId = $(clickedItem).hasClass("fromStop")?"#fromStop":"#toStop"; //if fromStop attribute exists
+		var otherId = (inputId=="#fromStop")?"#toStop":"#fromStop";
+
+		$(inputId).val($(clickedItem).html());
+		if ($(otherId).val().trim() != "") {
+			searchAtoB();
+		}
 	});
 
 });
@@ -337,7 +407,7 @@ function navBtnActivate(navBtnId) {
 // BEGIN - code for route section
 
 function searchAtoB() {
-	$("#search-alert, #search-error, #accordion1").hide();
+	$("#search-alert, #search-error, #accordion1, #suggestedStopNamesWrapper, #myCarousel").hide();
 	$("#search-results-list").html("");
 
 	var from = $("#fromStop").val().trim();
@@ -359,12 +429,14 @@ function searchAtoB() {
 	}
 
 	if ($.inArray(from, busStopNames) < 0 ) {
-		$("#search-error").html("You can't just make up your own bus stop names! Invalid entry in From Bus Stop.").show();
+		$("#search-error").html("You can't just make up your own bus stop names! Here are some suggestions for <b>From Bus Stop</b>.").show();
+		showStopNameSuggestions("fromStop");
 		return;
 	}
 
 	if ($.inArray(to, busStopNames) < 0 ) {
-		$("#search-error").html("You can't just make up your own bus stop names! Invalid entry in To Bus Stop.").show();
+		$("#search-error").html("You can't just make up your own bus stop names! Here are some suggestions for <b>To Bus Stop</b>.").show();
+		showStopNameSuggestions("toStop");
 		return;
 	}
 
@@ -474,6 +546,49 @@ function showSearchResults(data) {
 		}
 		$("#accordion1").html(fullAccStr).show();
 		$("#search-results-list").html(numberListStr).show();
+}
+
+function showStopNameSuggestions(inputId) {
+	var stop = $("#" + inputId).val();
+	// if (stop.length < 4) {
+	// 	return;
+	// }
+
+	// var jwArray = new Array();
+	var maxSugg = 20;
+	var objArray = new Array();
+	for (i=0; i<busStopNames.length; i++) {
+		var tempStops = busStopNames[i].split("/"); //in case there are different names for the same stop
+		for (j=0; j<tempStops.length; j++) {
+			var tempStopName = tempStops[j].replace(/ *\([^)]*\) */g, "").trim(); //remove anything within brackets
+			if (tempStopName.indexOf(" ") < 0) { //it is a single word
+				tempStopName = tempStopName.replace(/ Phase| Stage| Block| Circle| Cross| Gate| Depot| Layout| Colony| Park| Temple| Garden| Complex| Station| College| Engineering| Technology| Dental| Medical| Main| Lake| Bunk| Petrol| Theater| Convent| Center| Stadium| School| High| Town| Board| Point| Bhavan| Bazaar| Tech| 1st| 2nd| 3rd| 4th| 5th| 6th| 7th| 8th| 9th| Sector| Apartment| Junction| East| West| North| South| Institute| Township| Village| Market| Farm | Organization| Bank| Road| Office| Extension| Entrance| Academy| House| Stores| Church| /ig, "").trim(); //remove any Stage, Phase, Block, Circle, Cross, etc. that will give wrong results with the comparison algorithm
+			}
+			jwd = JaroWinklerDistance(stop, tempStopName);
+			//console.log(stop + "," + tempStopName + "," + jwd);
+			var obj = {stopName:busStopNames[i], jwDistance: jwd};
+			if (objArray.length < maxSugg) { //add first ten elements
+				objArray[objArray.length] = obj;
+			} else {
+				objArray.sort(function(a,b) {return b.jwDistance-a.jwDistance;})
+				if (obj.jwDistance > objArray[maxSugg - 1].jwDistance) {
+					objArray[maxSugg - 1] = obj;
+				}
+			}
+		}
+	}
+
+	var suggHtmlTmpl = '<span style="margin: 2px;"><button class="btn btn-default suggestedStopName %1$s">%2$s</button></span>';
+	var fullSuggHtml = "";
+	objArray.sort(function(a,b) {return b.jwDistance-a.jwDistance;})
+	for (i=0; i<objArray.length; i++) {
+		//console.log(stop + "," + objArray[i].stopName + "," + objArray[i].jwDistance);
+		fullSuggHtml += sprintf(suggHtmlTmpl, inputId, objArray[i].stopName);
+	}
+
+	$("#suggestedStopNames").html(fullSuggHtml);
+	$("#suggestedStopNamesWrapper").show();
+
 }
 
 // END - code for route section
