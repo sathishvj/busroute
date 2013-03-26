@@ -1,5 +1,5 @@
 application: businblr
-version: 0-2
+version: 0-3
 runtime: go
 api_version: go1
 

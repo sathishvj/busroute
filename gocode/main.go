@@ -75,8 +75,21 @@ func routeAtoBAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	buses := getBuses(from, to)
-	writeSuccessJSONResponse(c, w, buses)
+	kind := "direct"
+	buses := getDirectBuses(from, to)
+	/*
+	if len(buses) == 0 { //call only if no direct buses.  get1HopBuses is a costlier search.
+		kind = "1hop"
+		buses = get1HopBuses(from, to, c)
+	}
+	*/
+	writeSuccessJSONResponse(c, w, struct {
+		Kind  string
+		Buses []Bus
+	}{
+		kind,
+		buses,
+	})
 
 }
 

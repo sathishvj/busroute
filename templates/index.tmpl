@@ -44,67 +44,85 @@
 				<div class="span3">
 					<div class="control-group">
 						<div class="controls">
-							<label class="control-label" for="fromStop">From Bus Stop</label>
 							<div class="input-prepend">
 								<span class="add-on"><i class="icon-map-marker"></i></span>
-								<input class="span2" id="fromStop" type="text" placeholder="type starting stop" >
+								<input class="span2" id="fromStop" type="text" placeholder="type From bus stop" >
 							</div>
-							<label class="control-label" for="toStop">To Bus Stop</label>
 							<div class="input-prepend">
 								<span class="add-on"><i class="icon-flag"></i></span>
-								<input class="span2" id="toStop" type="text" placeholder="type destination stop" >
+								<input class="span2" id="toStop" type="text" placeholder="type To bus stop" >
 							</div>
 						</div>
 					</div>
 					<p><a href="#" class="btn btn-large btn-primary" onclick="searchAtoB()">Search &raquo;</a></p>
-					<p><button type="button" class="btn" data-toggle="button" id="showAsCSList">Comma Separated List</button></p>
 					<p><button type="button" class="btn" id="reverseFromTo">Reverse From & To</button></p>
+					<p><button type="button" class="btn" data-toggle="button" id="showAsCSList">Comma Separated List</button></p>
+					<p><button type="button" class="btn" data-toggle="button" id="expandAll">ExpandAll</button></p>
+					<p><button type="button" class="btn" data-toggle="button" id="showActiveRouteOnly">Show Active Route Only</button></p>
 				</div>
 
 				<div class="span6">
 					<div id="search-error" class="alert alert-error"></div>
-					<div id="search-alert" class="alert">Found <em><b><span id="search-results-count">NO</span></b></em> direct bus(es).</div>
+					<div id="search-alert" class="alert">Found <em><b><span id="search-results-count">NO</span></b></em> <u id="search-results-type">direct</u> route<span id="search-results-plural">s</span>.</div>
 					<div id="search-results-list" class=""></div><p>
-					<div id="myCarousel" class="carousel slide">
-						<ol class="carousel-indicators">
-							<li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-							<li data-target="#myCarousel" data-slide-to="1"></li>
-							<li data-target="#myCarousel" data-slide-to="2"></li>
-						</ol>
-						<!-- Carousel items -->
-						<div class="carousel-inner">
-							<div class="active item">
-								<div class="hero-unit">
-									<h4 style="color: lightseagreen;">New Feature!</h4>
-									<h2 style="color: lightseagreen;">Bus Stop Name Suggestions</h2>
-									<p>With Indian <b>names transliterated to English</b>, it is occasionally difficult to guess the correct spelling.  Beyond the name auto-complete in the input boxes, the app will now also suggest possible 'fuzzy' match alternatives.  This could be great for mobile users.</p>
-									<p>And it is done entirely locally without using your internet!  So <b style="color: lightseagreen">Bus in Blr</b> will <u>still remain super fast and light on your data connection</u>.</p>
-									<h4 style="color: lightseagreen;">Journey On!</h4>
+					<div id="myCarouselWrapper">
+						<div id="myCarousel" class="carousel slide">
+							<ol class="carousel-indicators">
+								<li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+								<li data-target="#myCarousel" data-slide-to="1"></li>
+								<li data-target="#myCarousel" data-slide-to="2"></li>
+							</ol>
+							<!-- Carousel items -->
+							<div class="carousel-inner">
+								<div class="active item">
+									<div class="hero-unit">
+										<h4 style="color: lightseagreen;">New UI Features!</h4>
+										<h2 style="color: lightseagreen;">Show Only Active Route, Expand All</h2>
+										<p>With Show Only Active Route, you can avoid seeing the long list of stops that are irrelevant to you.</p>
+										<p>Expand All opens out all the routes for you - all you have to do is scroll. Or swipe on your mobile phone, coz that works great too!</p>
+										<p><b style="color: lightseagreen">Bus in Blr</b> will continue to improve its <u>fast, convenient usability and use</u>.</p>
+										<h4 style="color: lightseagreen;">Journey On!</h4>
+									</div>
+								</div>
+								<div class="item">
+									<div class="hero-unit">
+										<h4 style="color: lightseagreen;">New Feature!</h4>
+										<h2 style="color: lightseagreen;">Bus Stop Name Suggestions</h2>
+										<p>With Indian <b>names transliterated to English</b>, it is occasionally difficult to guess the correct spelling.  Beyond the name auto-complete in the input boxes, the app will now also suggest possible 'fuzzy' match alternatives.  This could be great for mobile users.</p>
+										<p>And it is done entirely locally without using your internet!  So <b style="color: lightseagreen">Bus in Blr</b> will <u>still remain super fast and light on your data connection</u>.</p>
+										<h4 style="color: lightseagreen;">Journey On!</h4>
+									</div>
+								</div>
+								<div class="item">
+									<div class="hero-unit">
+										<h4 style="color: lightseagreen;">I Need Your Help!</h4>
+										<h2 style="color: lightseagreen;">Bus Timings Needed</h2>
+										<p>To improve your experience of <b style="color: lightseagreen">Bus in Blr</b>, I need the timings for all the bus routes.  So far I have only the Vayu Vajra bus service details from the bmtcinfo.com site.  And very little else.</p>
+										<p>If you have access to this data or know somebody personally whom we can reach out to for this data, kindly contact me at sathishvj@gmail.com.</p>
+									</div>
+								</div>
+								<div class="item">
+									<div class="hero-unit">
+										<h4 style="color: lightseagreen;">Discuss with others!</h4>
+										<h2 style="color: lightseagreen;">Join The Community</h2>
+										<p>You could get help from others using the same bus services as you, and you could contribute equally in return.</p>
+										<p>It will also be a place for developers and other open source contributors to extend the app once I formally make it open sourced.</p>
+										<p><a class="btn btn-default btn-large" href="https://groups.google.com/forum/?fromgroups#!forum/bus-in-blr" target="_blank">Go to <b style="color: lightseagreen">Bus in Blr</b> Google Groups</a></p>
+									</div>
 								</div>
 							</div>
-							<div class="item">
-								<div class="hero-unit">
-									<h4 style="color: lightseagreen;">I Need Your Help!</h4>
-									<h2 style="color: lightseagreen;">Bus Timings Needed</h2>
-									<p>To improve your experience of <b style="color: lightseagreen">Bus in Blr</b>, I need the timings for all the bus routes.  So far I have only the Vayu Vajra bus service details from the bmtcinfo.com site.  And very little else.</p>
-									<p>If you have access to this data or know somebody personally whom we can reach out to for this data, kindly contact me at sathishvj@gmail.com.</p>
-								</div>
-							</div>
-							<div class="item">
-								<div class="hero-unit">
-									<h4 style="color: lightseagreen;">Discuss with others!</h4>
-									<h2 style="color: lightseagreen;">Join The Community</h2>
-									<p>You could get help from others using the same bus services as you, and you could contribute equally in return.</p>
-									<p>It will also be a place for developers and other open source contributors to extend the app once I formally make it open sourced.</p>
-									<p><a class="btn btn-default btn-large" href="https://groups.google.com/forum/?fromgroups#!forum/bus-in-blr" target="_blank">Go to <b style="color: lightseagreen">Bus in Blr</b> Google Groups</a></p>
-								</div>
-							</div>
+							<!-- Carousel nav -->
+							<a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+							<a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
 						</div>
-						<!-- Carousel nav -->
-						<a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
-						<a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
+						<hr>
+		        <p class="text-center">created by <a href="http://www.sathishvj.com" target="_blank">sathishvj</a></p>
 					</div>
-					<div class="accordion" id="accordion1" >
+
+					<div class="accordion" id="accordionDirect" >
+
+					</div>
+					<div class="accordion" id="accordion1Hop" >
 
 					</div>
 					<div id="suggestedStopNamesWrapper">
@@ -128,7 +146,6 @@
 				<div class="span3">
 					<div class="control-group">
 						<div class="controls">
-							<label class="control-label" for="busNumber">Bus Number</label>
 							<input class="span2" id="busNumber" type="text" placeholder="type bus number here" >
 						</div>
 					</div>
@@ -263,11 +280,17 @@
 					<h3>Release notes</h3>
 					<ul>
 						<li>
+							<h5>Version 0.3, 2013/03/27</h5>
+							<ul>
+								<li>Simplified input forms on left by removing labels. Placeholders are good enough. This also reduces used screen real estate on mobiles.</li>
+								<li>Added an expand all feature.</li>
+								<li>Added a show only active route feature.</li>
+							</ul>
 							<h5>Version 0.2, 2013/03/26</h5>
 							<ul>
 								<li>Added stop name suggestions for misspelt names.</li>
 								<li>Minor spelling and phrase changes in About page.</li>
-								<li>Added a carousel on main page to display important information.</li>
+								<li>Added a carousel on main page to display banner information.</li>
 							</ul>
 							<h5>Version 0.1, 2013/03/24</h5>
 							<ul>
@@ -283,7 +306,7 @@
       <hr>
 
       <footer>
-        <p>created by <a href="http://www.sathishvj.com">sathishvj</a></p>
+        <p>created by <a href="http://www.sathishvj.com" target="_blank">sathishvj</a></p>
       </footer>
 
     </div> <!-- /container -->
@@ -321,8 +344,9 @@ $(document).ready(function() {
 
 	$("#search-alert, #search-error, #suggestedStopNamesWrapper").hide();
 	$("#search-results-list").html("");
-	// $("#fromStop").val(busStopNames[2]);
-	// $("#toStop").val(busStopNames[1]);
+
+	$("#fromStop").val("");
+	$("#toStop").val("");
 
 	$("#busnumber-search-error").hide();
 
@@ -338,7 +362,7 @@ $(document).ready(function() {
 	//for now hide the Stop Nav Btn as there is no functionality
 	$("#stopNavBtn").hide();
 
-	$("#showAsCSList").click(function(){
+	$("#showAsCSList, #expandAll, #showActiveRouteOnly").click(function(){
 		searchAtoB();
 	});
 
@@ -407,7 +431,7 @@ function navBtnActivate(navBtnId) {
 // BEGIN - code for route section
 
 function searchAtoB() {
-	$("#search-alert, #search-error, #accordion1, #suggestedStopNamesWrapper, #myCarousel").hide();
+	$("#search-alert, #search-error, #accordionDirect, #accordion1Hop, #suggestedStopNamesWrapper, #myCarouselWrapper").hide();
 	$("#search-results-list").html("");
 
 	var from = $("#fromStop").val().trim();
@@ -443,7 +467,7 @@ function searchAtoB() {
 	var url = "/r?from=" + escape(from) + "&to=" + escape(to);
 	// alert("Calling url:" + url);
 
-	$("#accordion1, #search-results-list").html("");
+	$("#accordionDirect, #accordion1Hop, #search-results-list").html("");
 
 	$.get(url, showSearchResults)
 	.error(function(xhr, status, error) {
@@ -452,7 +476,67 @@ function searchAtoB() {
 	});
 }
 
-var accordionString = '<div class="accordion-group">\
+function showSearchResults(data) {
+		var jsonData = $.parseJSON(data);
+		showJsonSearchResults(jsonData);
+}
+
+function showJsonSearchResults(jsonData) {
+		// var jsonData = $.parseJSON(data);
+
+		// alert("Received: " + len + " items : " + data);
+		$("#search-error").hide();
+		if (jsonData == null || jsonData.Kind == null || (jsonData.Kind != "direct" && jsonData.Kind != "1hop")){
+			$("#search-error").html("Application error! The server seems to have returned error data. This isn't your fault, but ours.  Could you please report the issue and how it happened so that we may work on it?").show();
+			//TODO: add an ajax call to automatically report application errors.
+			return;
+		}
+
+		$("#search-alert").removeClass();
+		var len = jsonData.Buses==null?0:jsonData.Buses.length;
+		if (len == 0) {
+			$("#search-results-count").html("NO valid");
+			$("#search-results-type").html("");
+			$("#search-alert").addClass("alert alert-warning").show();
+			return;
+		}
+
+		var fromStop = $("#fromStop").val();
+		var toStop = $("#toStop").val();
+		var showAsCSList = false;
+		if ($("#showAsCSList").hasClass("active")) {
+			showAsCSList = true;
+		}
+
+		var expandAll = false;
+		if ($("#expandAll").hasClass("active")) {
+			expandAll = true;
+		}
+
+		var showActiveRouteOnly = false;
+		if ($("#showActiveRouteOnly").hasClass("active")) {
+			showActiveRouteOnly = true;
+		}
+
+		if (jsonData.Kind == "direct") {
+			$("#search-results-count").html(""+len);
+			$("#search-results-type").html("direct");
+			$("#search-results-plural").html(len==1?"":"s");
+			$("#search-alert").addClass("alert alert-success").show();
+			showDirectBuses(jsonData.Buses, fromStop, toStop, showAsCSList, expandAll, showActiveRouteOnly, jsonData.Kind);
+		} else if (jsonData.Kind == "1hop") {
+			$("#search-results-count").html(""+(len/2));
+			$("#search-results-type").html("one change");
+			$("#search-results-plural").html(len/2==1?"":"s");
+			$("#search-alert").addClass("alert alert-info").show();
+			show1HopBuses(jsonData.Buses, fromStop, toStop, showAsCSList, expandAll, showActiveRouteOnly, jsonData.Kind);
+		} else {
+			alert("Application error! Invalid kind: " + jsonData.Kind)
+		}
+
+}
+
+var directAccordionString = '<div class="accordion-group">\
 						<div class="accordion-heading">\
 							<a class="accordion-toggle" data-toggle="collapse" data-target="#collapse%1$d" href="#collapse%1$d">%2$s</a>\
 						</div>\
@@ -463,92 +547,153 @@ var accordionString = '<div class="accordion-group">\
 						</div>\
 					</div>';
 
-function showSearchResults(data) {
-		var jsonData = $.parseJSON(data);
-		var len = 0;
-		if (jsonData != null) {
-			len = jsonData.length;
-		}
-		// alert("Received: " + len + " items : " + data);
-		$("#search-error").hide();
-		$("#search-alert").show();
+function showDirectBuses(jsonData, fromStop, toStop, showAsCSList, expandAll, showActiveRouteOnly, kind) {
 
-		$("#search-alert").removeClass();
-		if (len == 0) {
-			$("#search-results-count").html("NO");
-			$("#search-alert").addClass("alert alert-warning");
-			return;
+	$("#search-results-list").html(getNumberListStr(jsonData, kind)).show();
+
+	var len = jsonData.length;
+	var autoOpenFirst = (len == 1);
+	var fullAccStr = "";
+	// var numberListStr = "";
+	for (i=0; i<len; i++) {
+			var busStopsStr = getRouteBusStopsStr(jsonData[i], fromStop, toStop, showAsCSList, expandAll, showActiveRouteOnly, null);
+			fullAccStr += sprintf(directAccordionString, i+1, jsonData[i].Number, busStopsStr, expandAll||autoOpenFirst?"in":"");
+
+		}
+		$("#accordionDirect").html(fullAccStr).show();
+	}
+
+function getRouteBusStopsStr(busData, fromStop, toStop, showAsCSList, expandAll, showActiveRouteOnly, allChangePoints) {
+	var busStopsStr = "";
+	var firstFound = false, secondFound = false;
+	for (j=0; j<busData.BusStopsA.length; j++) {
+		var value = busData.BusStopsA[j];
+		var prefix = "", suffix = "";
+		if (value == fromStop ||  value == toStop) {
+			if (!firstFound) { firstFound = true; }
+			else { secondFound = true; }
+			prefix = "<b>";
+			suffix = "</b>";
+		}
+		if ((firstFound && !secondFound) || (secondFound && (value == fromStop || value == toStop))) {
+			//for items from firstFound item upto but not including secondFound item
+			prefix = "<span style='color: green;'>" + prefix;
+			suffix = suffix + "</span>";
+		} else if (showActiveRouteOnly) {
+			continue;
 		} else {
-			$("#search-results-count").html(len);
-			$("#search-alert").addClass("alert alert-success");
+			prefix = "<i>" + prefix;
+			suffix = suffix + "</i>";
 		}
 
-		var showAsCSList = false;
-		if ($("#showAsCSList").hasClass("active")) {
-			showAsCSList = true;
-		}
-
-		// if ($("#allowMultipleExpand").hasClass("active")) {
-		// 	$("#accordion1").attr("selector");
-		// } else {
-		// 	$("#accordion1").removeAttr("selector");
-		// }
-
-		var autoOpenFirst = (len == 1);
-
-		var fromStop = $("#fromStop").val();
-		var toStop = $("#toStop").val();
-		var fullAccStr = "";
-		var numberListStr = "";
-		for (i=0; i<len; i++) {
-			var busStopsStr = "";
-			// alert("BusStopsA length: "+ Object.keys(jsonData[i].BusStopsA).length);
-			// var j = 0;
-			var firstFound = false, secondFound = false;
-			// for (key in jsonData[i].BusStopsA) {
-			// 	var value = jsonData[i].BusStopsA[key];
-			for (j=0; j<jsonData[i].BusStopsA.length; j++) {
-				var value = jsonData[i].BusStopsA[j];
-				var prefix = "", suffix = "";
-				if (value == fromStop ||  value == toStop) {
-					if (!firstFound) { firstFound = true; }
-					else { secondFound = true; }
-					prefix = "<b>";
-					suffix = "</b>";
+		if (allChangePoints) {
+			var cpLen = allChangePoints.length;
+			for (m=0; m<cpLen; m++) {
+				var changePoint = allChangePoints[m];
+				if (changePoint == value) {
+					suffix += " <i class='icon-random'></i>";
 				}
-				if ((firstFound && !secondFound) || //for items from firstFound item upto but not including secondFound item
-					(secondFound && (value == fromStop || value == toStop))) { //
-					prefix = "<span style='color: green;'>" + prefix;
+				if (changePoint == fromStop || changePoint == toStop) {
+					continue;
+				} else if (changePoint == value) {
+					prefix = "<span style='color:blue;'>" + prefix;
 					suffix = suffix + "</span>";
-				} else {
-					prefix = "<i>" + prefix;
-					suffix = suffix + "</i>";
-				}
-				if (showAsCSList) {
-					if (busStopsStr != "" ) {
-						busStopsStr += ", ";
-					}
-					busStopsStr += prefix + value + suffix;
-				} else {
-					busStopsStr += prefix + "<li>" + value + "</li>" + suffix;
+					console.log(busData.Number);
 				}
 			}
-			if (showAsCSList) {
-				//nothing to do here
-			} else {
-				busStopsStr = "<ol>" + busStopsStr + "</ol>";
-			}
-			fullAccStr += sprintf(accordionString, i+1, jsonData[i].Number, busStopsStr, autoOpenFirst?"in":"");
-
-			//create a list of all found bus numbers also
-			if (numberListStr != "") { numberListStr += ", "}
-			numberListStr += jsonData[i].Number;
 		}
-		$("#accordion1").html(fullAccStr).show();
-		$("#search-results-list").html(numberListStr).show();
+
+		if (showAsCSList) {
+			if (busStopsStr != "" ) {
+				busStopsStr += ", ";
+			}
+			busStopsStr += prefix + value + suffix;
+		} else {
+			// busStopsStr += prefix + "<li>" + value + "</li>" + suffix;
+			busStopsStr += "<li>" + prefix + value + suffix + "</li>";
+		}
+	}
+
+	if (showAsCSList) {
+	} else {
+		busStopsStr = "<ol>" + busStopsStr + "</ol>";
+	}
+	return busStopsStr;
 }
 
-function showStopNameSuggestions(inputId) {
+function getNumberListStr(jsonData, kind) {
+	var len = jsonData.length;
+	var numberListStr = "";
+	for (i=0; i<len; i++) {
+		if (numberListStr != "") {
+			numberListStr += ", ";
+		}
+		numberListStr += jsonData[i].Number;
+		if (kind == "1hop") {
+			numberListStr += "-";
+			i++;
+			numberListStr += jsonData[i].Number;
+		}
+	}
+	// console.log(kind);
+	// console.log(numberListStr);
+	return numberListStr;
+}
+
+var oneHopAccordionString = '<div class="accordion-group">\
+						<div class="accordion-heading">\
+							<a class="accordion-toggle" data-toggle="collapse" data-target="#collapse%1$d" href="#collapse%1$d">%2$s</a>\
+						</div>\
+						<div id="collapse%1$d" class="accordion-body collapse %5$s">\
+							<div class="accordion-inner">\
+								<div class="container">\
+									<div class="row">\
+										<div class="span3">\
+											%3$s\
+										</div>\
+										<div class="span3">\
+											%4$s\
+										</div>\
+									</div>\
+								</div>\
+							</div>\
+						</div>\
+					</div>';
+
+function show1HopBuses(jsonData, fromStop, toStop, showAsCSList, expandAll, showActiveRouteOnly, kind) {
+
+	$("#search-results-list").html(getNumberListStr(jsonData, kind)).show();
+
+	var len = jsonData.length;
+	var autoOpenFirst = (len == 1);
+	var fullAccStr = "";
+	// var numberListStr = "";
+	for (i=0; i<len; i++) {
+			var originBus = jsonData[i];
+			i++;
+			var destBus = jsonData[i];
+
+			//find closest stop going down origin bus and up dest bus
+			var allChangePoints = new Array();
+			for (m=0; m<originBus.BusStopsA.length; m++) {
+				for (n=destBus.BusStopsA.length-1; n>=0; n--) {
+					if (originBus.BusStopsA[m] == destBus.BusStopsA[n]) {
+						allChangePoints[allChangePoints.length] = originBus.BusStopsA[m];
+						break;
+					}
+				}
+			}
+
+			var originBusStopsStr = getRouteBusStopsStr(originBus, fromStop, allChangePoints[0], showAsCSList, expandAll, showActiveRouteOnly, allChangePoints);
+			var destBusStopsStr = getRouteBusStopsStr(destBus, allChangePoints[0], toStop, showAsCSList, expandAll, showActiveRouteOnly, allChangePoints);
+
+			fullAccStr += sprintf(oneHopAccordionString, i+1, originBus.Number+"-"+destBus.Number, originBusStopsStr, destBusStopsStr, expandAll||autoOpenFirst?"in":"");
+
+		}
+		$("#accordion1Hop").html(fullAccStr).show();
+	}
+
+	function showStopNameSuggestions(inputId) {
 	var stop = $("#" + inputId).val();
 	// if (stop.length < 4) {
 	// 	return;
