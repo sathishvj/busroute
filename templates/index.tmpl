@@ -55,11 +55,13 @@
 						</div>
 					</div>
 					<p><a href="#" class="btn btn-large btn-primary" onclick="searchAtoB()">Search &raquo;</a></p>
-					<p><button type="button" class="btn" id="reverseFromTo">Reverse From & To</button></p>
-					<p><button type="button" class="btn" data-toggle="button" id="showAsCSList">Comma Separated List</button></p>
-					<p><button type="button" class="btn" data-toggle="button" id="expandAll">ExpandAll</button></p>
-					<p><button type="button" class="btn" data-toggle="button" id="showActiveRouteOnly">Show Active Route Only</button></p>
-				</div>
+					<p><button type="button" class="btn" id="reverseFromTo">Reverse From &amp; To</button></p>
+					<p><button type="button" class="btn" id="showAsCSList">Comma Separated List</button></p>
+					<p><button type="button" class="btn active" id="expandAll">ExpandAll</button></p>
+					<p><button type="button" class="btn active" id="showActiveRouteOnly">Show Active Route Only</button></p>
+<!-- 					<p><button type="button" class="btn active" data-toggle="button" id="expandAll">ExpandAll</button></p>
+					<p><button type="button" class="btn active" data-toggle="button" id="showActiveRouteOnly">Show Active Route Only</button></p>
+ -->				</div>
 
 				<div class="span6">
 					<div id="search-error" class="alert alert-error"></div>
@@ -76,7 +78,17 @@
 							<div class="carousel-inner">
 								<div class="active item">
 									<div class="hero-unit">
-										<h4 style="color: lightseagreen;">New UI Features!</h4>
+										<h4 style="color: lightseagreen;">Increased Speed! <small>2013/03/28</small></h4>
+										<h2 style="color: lightseagreen;">Faster With Cached Data</h2>
+										<p>Upto five recent searches are cached locally to give you instant responses.</p>
+										<p>And it works cheaper for you while on the move because your data connection is used less.</p>
+										<p>It's already real fast. And <b style="color: lightseagreen">Bus in Blr</b> is becoming <u>faster</u> with simple optimizations.</p>
+										<h4 style="color: lightseagreen;">Journey On! Fast!</h4>
+									</div>
+								</div>
+								<div class="item">
+									<div class="hero-unit">
+										<h4 style="color: lightseagreen;">New UI Features! <small>2013/03/27</small></h4>
 										<h2 style="color: lightseagreen;">Show Only Active Route, Expand All</h2>
 										<p>With Show Only Active Route, you can avoid seeing the long list of stops that are irrelevant to you.</p>
 										<p>Expand All opens out all the routes for you - all you have to do is scroll. Or swipe on your mobile phone, coz that works great too!</p>
@@ -86,7 +98,7 @@
 								</div>
 								<div class="item">
 									<div class="hero-unit">
-										<h4 style="color: lightseagreen;">New Feature!</h4>
+										<h4 style="color: lightseagreen;">New Feature! <small>2013/03/26</small></h4>
 										<h2 style="color: lightseagreen;">Bus Stop Name Suggestions</h2>
 										<p>With Indian <b>names transliterated to English</b>, it is occasionally difficult to guess the correct spelling.  Beyond the name auto-complete in the input boxes, the app will now also suggest possible 'fuzzy' match alternatives.  This could be great for mobile users.</p>
 										<p>And it is done entirely locally without using your internet!  So <b style="color: lightseagreen">Bus in Blr</b> will <u>still remain super fast and light on your data connection</u>.</p>
@@ -280,6 +292,12 @@
 					<h3>Release notes</h3>
 					<ul>
 						<li>
+							<h5>Version 0.4, 2013/03/28</h5>
+							<ul>
+								<li>Saving 5 previous searches to make app real fast.</li>
+								<li>Expand All and Show Active Route Only is active/on by default.</li>
+								<li>Added note that I'm working on 1-changeover routes when direct route search gives no results.</li>
+							</ul>
 							<h5>Version 0.3, 2013/03/27</h5>
 							<ul>
 								<li>Simplified input forms on left by removing labels. Placeholders are good enough. This also reduces used screen real estate on mobiles.</li>
@@ -363,6 +381,7 @@ $(document).ready(function() {
 	$("#stopNavBtn").hide();
 
 	$("#showAsCSList, #expandAll, #showActiveRouteOnly").click(function(){
+		$(this).button('toggle');
 		searchAtoB();
 	});
 
@@ -464,16 +483,60 @@ function searchAtoB() {
 		return;
 	}
 
+	$("#accordionDirect, #accordion1Hop, #search-results-list").html("");
+
+	//first check previous searches
+	var prevSearchData = getSavedSearch(from, to);
+	if (prevSearchData) {
+		showJsonSearchResults(prevSearchData);
+		return;
+	}
+
 	var url = "/r?from=" + escape(from) + "&to=" + escape(to);
 	// alert("Calling url:" + url);
 
-	$("#accordionDirect, #accordion1Hop, #search-results-list").html("");
 
 	$.get(url, showSearchResults)
 	.error(function(xhr, status, error) {
 		$("#search-alert").hide();
 		$("#search-error").html("Application error: " + status + "- " + error).show();
 	});
+}
+
+
+var savedSearches = new Array();
+function saveCurrentSearchResults(fromVal, toVal, jsonData) {
+	for (i=0; i<savedSearches.length; i++) {
+		var item = savedSearches[i];
+		if (item.from == fromVal && item.to == toVal) {
+			// console.log("That saved search already exists.");
+			return;
+		}
+	}
+
+	var newSavedSearch = {
+		from: fromVal,
+		to: toVal,
+		data: jsonData,
+		time: new Date().getTime()
+	}
+
+	if (savedSearches.length == 5) {
+		savedSearches.shift();
+	}
+	savedSearches[savedSearches.length] = newSavedSearch;
+	// console.log("Saved search");
+}
+
+function getSavedSearch(from, to) {
+	for (i=0; i<savedSearches.length; i++) {
+		var item = savedSearches[i];
+		if (item.from == from && item.to == to) {
+			// console.log("Retrieved saved search");
+			return item.data; //TODO: this can be better done as an RUL
+		}
+	}
+	return null;
 }
 
 function showSearchResults(data) {
@@ -492,11 +555,14 @@ function showJsonSearchResults(jsonData) {
 			return;
 		}
 
+		saveCurrentSearchResults($("#fromStop").val(), $("#toStop").val(), jsonData);
+
 		$("#search-alert").removeClass();
 		var len = jsonData.Buses==null?0:jsonData.Buses.length;
 		if (len == 0) {
 			$("#search-results-count").html("NO valid");
 			$("#search-results-type").html("");
+			$("#search-results-list").html("This was just from searching direct routes.  I'm currently working on providing routes with 1 changeover - but, I'll be honest with you here, it is taking longer than I expected to make it very usable results and also at high speed.  My apologies for now, but please do try this later by which time I'll get the 1 changeover routes done.  Thank you.");
 			$("#search-alert").addClass("alert alert-warning").show();
 			return;
 		}
@@ -512,6 +578,7 @@ function showJsonSearchResults(jsonData) {
 		if ($("#expandAll").hasClass("active")) {
 			expandAll = true;
 		}
+		// console.log("ExpandAll in showJsonSearchResults: "+expandAll);
 
 		var showActiveRouteOnly = false;
 		if ($("#showActiveRouteOnly").hasClass("active")) {
@@ -555,6 +622,7 @@ function showDirectBuses(jsonData, fromStop, toStop, showAsCSList, expandAll, sh
 	var autoOpenFirst = (len == 1);
 	var fullAccStr = "";
 	// var numberListStr = "";
+	// console.log("ExpandAll in showDirectBuses: "+expandAll);
 	for (i=0; i<len; i++) {
 			var busStopsStr = getRouteBusStopsStr(jsonData[i], fromStop, toStop, showAsCSList, expandAll, showActiveRouteOnly, null);
 			fullAccStr += sprintf(directAccordionString, i+1, jsonData[i].Number, busStopsStr, expandAll||autoOpenFirst?"in":"");
@@ -598,7 +666,7 @@ function getRouteBusStopsStr(busData, fromStop, toStop, showAsCSList, expandAll,
 				} else if (changePoint == value) {
 					prefix = "<span style='color:blue;'>" + prefix;
 					suffix = suffix + "</span>";
-					console.log(busData.Number);
+					// console.log(busData.Number);
 				}
 			}
 		}
