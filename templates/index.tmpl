@@ -69,7 +69,7 @@
 
 				<div class="span6">
 					<div id="search-error" class="alert alert-error"></div>
-					<div id="search-alert" class="alert">Found <em><b><span id="search-results-count">NO</span></b></em> <u id="search-results-type">direct</u> route<span id="search-results-plural">s</span>.</div>
+					<div id="search-alert" class="alert">Found <em><b><span id="search-results-count">NO</span></b></em> <u id="search-results-type">direct</u> route<span id="search-results-plural">s</span>.  <em><span id="origin-destination"></span></em></div>
 					<div id="search-results-list" class=""></div><p>
 					<div id="myCarouselWrapper">
 						<div id="myCarousel" class="carousel slide">
@@ -81,6 +81,23 @@
 							<!-- Carousel items -->
 							<div class="carousel-inner">
 								<div class="active item">
+									<div class="hero-unit">
+										<h4 style="color: lightseagreen;">Our own domain! <small>2013/03/28</small></h4>
+										<h2 style="color: lightseagreen;">www.businblr.com is Live!!</h2>
+										<p>Thank you to all you early users who tried out this site (at businblr.appspot.com) and gave your constructive feedback. The site's instant popularity and your kind words encouraged me to take this a step further and put it on an easily accessible domain name.</p>
+										<p>We are now at <a href="http://www.businblr.com" style="color: lightseagreen;cursor: pointer;">www.businblr.com</a>. It just became easier to spread the word!</p>
+										<h4 style="color: lightseagreen;">Journey On! Fast!</h4>
+									</div>
+								</div>
+								<div class="item">
+									<div class="hero-unit">
+										<h4 style="color: lightseagreen;">Improved Usability! <small>2013/03/28</small></h4>
+										<h2 style="color: lightseagreen;">AutoCorrection, Visual Feedback</h2>
+										<p>Typed 'adur  ', or  '   adur', or '  adur  '. Don't worry, it will autocorrect to 'Adur'. And as before, if you spelt it wrong like 'adoor', then with some automatic calculations you will get a list of alternate name suggestions.</p>
+										<p>Want assistance as you type? Color changes will indicate if the name is right so far.</p>
+									</div>
+								</div>
+								<div class="item">
 									<div class="hero-unit">
 										<h4 style="color: lightseagreen;">Increased Speed! <small>2013/03/28</small></h4>
 										<h2 style="color: lightseagreen;">Faster With Cached Data</h2>
@@ -296,7 +313,7 @@
 					<h3>Release notes</h3>
 					<ul>
 						<li>
-							<h5>Version 0.5, 2013/03/29</h5>
+							<h5>Version 0.5, 2013/03/28</h5>
 							<ul>
 								<li>Usability improvements in From To input boxes.
 									<ul>
@@ -305,6 +322,7 @@
 										<li>Auto focus on first input box.</li>
 									</ul>
 								</li>
+								<li>Added origin-destination to the success title.</li>
 							</ul>
 							<h5>Version 0.4, 2013/03/28</h5>
 							<ul>
@@ -624,6 +642,7 @@ function showJsonSearchResults(jsonData) {
 			showActiveRouteOnly = true;
 		}
 
+		$("#origin-destination").html(fromStop + " - " + toStop);
 		if (jsonData.Kind == "direct") {
 			$("#search-results-count").html(""+len);
 			$("#search-results-type").html("direct");
