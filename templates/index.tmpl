@@ -48,6 +48,10 @@
 								<span class="add-on"><i class="icon-map-marker"></i></span>
 								<input class="span2" id="fromStop" type="text" placeholder="type From bus stop" >
 							</div>
+						</div>
+					</div>
+					<div class="control-group">
+						<div class="controls">
 							<div class="input-prepend">
 								<span class="add-on"><i class="icon-flag"></i></span>
 								<input class="span2" id="toStop" type="text" placeholder="type To bus stop" >
@@ -292,6 +296,16 @@
 					<h3>Release notes</h3>
 					<ul>
 						<li>
+							<h5>Version 0.5, 2013/03/29</h5>
+							<ul>
+								<li>Usability improvements in From To input boxes.
+									<ul>
+										<li>Auto capitalizing on losing focus. adlur->Adlur.  Makes it easier for people to type name in, especially on keyboards.</li>
+										<li>Color changing validation of stop names.</li>
+										<li>Auto focus on first input box.</li>
+									</ul>
+								</li>
+							</ul>
 							<h5>Version 0.4, 2013/03/28</h5>
 							<ul>
 								<li>Saving 5 previous searches to make app real fast.</li>
@@ -341,6 +355,8 @@ var busNumbers = {{.BusNumbers}};
 
 //global setup
 $(document).ready(function() {
+	$("#fromStop").focus();
+
 	$("#fromStop, #toStop").typeahead({
 		minLength: 1,
 		items: 12,
@@ -404,12 +420,35 @@ $(document).ready(function() {
 		var otherId = (inputId=="#fromStop")?"#toStop":"#fromStop";
 
 		$(inputId).val($(clickedItem).html());
+		validateFromToInputs();
 		if ($(otherId).val().trim() != "") {
 			searchAtoB();
 		}
 	});
 
+	$("#fromStop, #toStop").bind("change paste keyup", function() {
+		validateFromToInputs();
+	});
+
+	$("#fromStop, #toStop").focusout(function() {
+		autoCapitalizeStopNames(this);
+		validateFromToInputs();
+	});
+
 });
+
+function isValidStopName(name) {
+	var obj = new Object();
+	//TODO: return a second member variable that contains the Jaro-Winkler nearness for the remaining
+	obj.isValid = false;
+	for (i=0; i<busStopNames.length; i++) {
+		if (busStopNames[i] == name) {
+			obj.isValid = true;
+		}
+	}
+
+	return obj;
+}
 
 function navBtnActivate(navBtnId) {
 	$('.nav-collapse').collapse("hide");
@@ -791,7 +830,7 @@ function show1HopBuses(jsonData, fromStop, toStop, showAsCSList, expandAll, show
 		}
 	}
 
-	var suggHtmlTmpl = '<span style="margin: 2px;"><button class="btn btn-default suggestedStopName %1$s">%2$s</button></span>';
+	var suggHtmlTmpl = '<span style="margin: 2px; "><button class="btn btn-default btn-large suggestedStopName %1$s">%2$s</button></span>';
 	var fullSuggHtml = "";
 	objArray.sort(function(a,b) {return b.jwDistance-a.jwDistance;})
 	for (i=0; i<objArray.length; i++) {
@@ -802,6 +841,33 @@ function show1HopBuses(jsonData, fromStop, toStop, showAsCSList, expandAll, show
 	$("#suggestedStopNames").html(fullSuggHtml);
 	$("#suggestedStopNamesWrapper").show();
 
+}
+
+function validateFromToInputs() {
+		// console.log("focused out");
+		// var arr = ["#fromStop", "#toStop"];
+		var a = new Array("#fromStop", "#toStop");
+		for (j=0; j<a.length; j++ ) {
+			var item = a[j];
+			var div = $(item).parents("div.control-group");
+			div.removeClass("error success");
+
+			var v = $(item).val().trim();
+			if (v == "") {
+				continue;
+			}
+			var isValidObj = isValidStopName(v);
+			$(div).addClass(!isValidObj.isValid?($(item).is(":focus")?"warning":"error"):"success");
+		}
+}
+
+function autoCapitalizeStopNames(inp){
+	var name = $(inp).val().trim().toLowerCase();
+	for (i=0; i<busStopNames.length; i++) {
+		if (busStopNames[i].toLowerCase() == name) {
+			$(inp).val(busStopNames[i]);
+		}
+	}
 }
 
 // END - code for route section
