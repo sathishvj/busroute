@@ -46,7 +46,7 @@
 						<div class="controls">
 							<div class="input-prepend">
 								<span class="add-on"><i class="icon-map-marker"></i></span>
-								<input class="span2" id="fromStop" type="text" placeholder="type From bus stop" >
+								<input class="span2" id="fromStop" type="text" placeholder="type From bus stop" tabindex="1">
 							</div>
 						</div>
 					</div>
@@ -54,15 +54,16 @@
 						<div class="controls">
 							<div class="input-prepend">
 								<span class="add-on"><i class="icon-flag"></i></span>
-								<input class="span2" id="toStop" type="text" placeholder="type To bus stop" >
+								<input class="span2" id="toStop" type="text" placeholder="type To bus stop"  tabindex="2">
 							</div>
 						</div>
 					</div>
-					<p><a href="#" class="btn btn-large btn-primary" onclick="searchAtoB()">Search &raquo;</a></p>
+					<p><a id="searchBtn" href="#" class="btn btn-large btn-primary" onclick="searchAtoB()" tabindex="3">Search &raquo;</a></p>
 					<p><button type="button" class="btn" id="reverseFromTo">Reverse From &amp; To</button></p>
 					<p><button type="button" class="btn" id="showAsCSList">Comma Separated List</button></p>
 					<p><button type="button" class="btn active" id="expandAll">ExpandAll</button></p>
-					<p><button type="button" class="btn active" id="showActiveRouteOnly">Show Active Route Only</button></p>
+					<p><button type="button" class="btn active" id="showActiveRouteOnly">Show Journey Stops Only</button></p>
+					<p><button type="button" class="btn active" id="sortByNumberOfStops">Sort by Stop Count</button></p>
 <!-- 					<p><button type="button" class="btn active" data-toggle="button" id="expandAll">ExpandAll</button></p>
 					<p><button type="button" class="btn active" data-toggle="button" id="showActiveRouteOnly">Show Active Route Only</button></p>
  -->				</div>
@@ -81,6 +82,16 @@
 							<!-- Carousel items -->
 							<div class="carousel-inner">
 								<div class="active item">
+									<div class="hero-unit">
+										<h4 style="color: lightseagreen;">Multiple new UI Features! <small>2013/03/30</small></h4>
+										<h2 style="color: lightseagreen;">Grouping. Concatenating. Sorting.</h2>
+										<p>Grouping of same routes. Much lesser to scroll, less text on page - easier and faster for you.</p>
+										<p>Concatenating similar route numbers - you assimilate the information quicker.</p>
+										<p>Sorting routes by number of stops. On by default and the best routes are the first you see.</p>
+										<h4 style="color: lightseagreen;">Journey On! Easier! Faster!</h4>
+									</div>
+								</div>
+								<div class="item">
 									<div class="hero-unit">
 										<h4 style="color: lightseagreen;">Our own domain! <small>2013/03/28</small></h4>
 										<h2 style="color: lightseagreen;">www.businblr.com is Live!!</h2>
@@ -313,11 +324,22 @@
 					<h3>Release notes</h3>
 					<ul>
 						<li>
+							<h5>Version 0.6, 2013/03/30</h5>
+							<ul>
+								<li>In Show Journey Stops Only mode, bus routes are combined under one title if they have the same route.  Much lesser for the user to scroll through.  Also lighter in HTML.</li>
+								<li>Concatenated similar bus numbers together in numbers list. Much easier for the brain to quickly assimilate the information this way. 201A, 201B, 201C -> 201/A/B/C</li>
+								<li>Added bus stop count.</li>
+								<li>Added button to sort by stop count.</li>
+								<li>Fixed bug: old origin-destination is shown after a successful direct search, and then a no valid routes search.  Reported by user dipti***.</li>
+								<li>Fixed bug: When buses had circular routes, the route shown was sometimes incorrect.</li>
+								<li>Show Active Route Only button renamed to Show Journey Stops Only</li>
+								<li>Added google analytics script.</li>
+							</ul>
 							<h5>Version 0.5, 2013/03/28</h5>
 							<ul>
 								<li>Usability improvements in From To input boxes.
 									<ul>
-										<li>Auto capitalizing on losing focus. adlur->Adlur.  Makes it easier for people to type name in, especially on keyboards.</li>
+										<li>Auto capitalizing on losing focus. adlur->Adlur.  Makes it easier for people to type name in, especially on mobile keyboards.</li>
 										<li>Color changing validation of stop names.</li>
 										<li>Auto focus on first input box.</li>
 									</ul>
@@ -414,7 +436,7 @@ $(document).ready(function() {
 	//for now hide the Stop Nav Btn as there is no functionality
 	$("#stopNavBtn").hide();
 
-	$("#showAsCSList, #expandAll, #showActiveRouteOnly").click(function(){
+	$("#showAsCSList, #expandAll, #showActiveRouteOnly, #sortByNumberOfStops").click(function(){
 		$(this).button('toggle');
 		searchAtoB();
 	});
@@ -612,20 +634,23 @@ function showJsonSearchResults(jsonData) {
 			return;
 		}
 
-		saveCurrentSearchResults($("#fromStop").val(), $("#toStop").val(), jsonData);
+		var fromStop = $("#fromStop").val().trim();
+		var toStop = $("#toStop").val().trim();
+		// saveCurrentSearchResults($("#fromStop").val(), $("#toStop").val(), jsonData);
+		saveCurrentSearchResults(fromStop, toStop, jsonData);
 
 		$("#search-alert").removeClass();
+		$("#origin-destination").html(fromStop + " - " + toStop);
 		var len = jsonData.Buses==null?0:jsonData.Buses.length;
 		if (len == 0) {
 			$("#search-results-count").html("NO valid");
-			$("#search-results-type").html("");
-			$("#search-results-list").html("This was just from searching direct routes.  I'm currently working on providing routes with 1 changeover - but, I'll be honest with you here, it is taking longer than I expected to make it very usable results and also at high speed.  My apologies for now, but please do try this later by which time I'll get the 1 changeover routes done.  Thank you.");
+			$("#search-results-type").html(jsonData.Kind=="direct"?" direct":"");
+			// $("#search-results-list").html("This was just from searching direct routes.  I'm currently working on providing routes with 1 changeover - but, I'll be honest with you here, it is taking longer than I expected to make it very usable results and also at high speed.  My apologies for now, but please do try this later by which time I'll get the 1 changeover routes done.  Thank you.");
+			$("#search-results-list").html("Until I have the multiple routes option working efficiently, please try a route via one of these main bus stands. (What main bus stands am I missing?  Please let me know in the feedback and I shall update it here.)" + getSuggestionsViaMainStands(fromStop, toStop));
 			$("#search-alert").addClass("alert alert-warning").show();
 			return;
 		}
 
-		var fromStop = $("#fromStop").val();
-		var toStop = $("#toStop").val();
 		var showAsCSList = false;
 		if ($("#showAsCSList").hasClass("active")) {
 			showAsCSList = true;
@@ -642,19 +667,23 @@ function showJsonSearchResults(jsonData) {
 			showActiveRouteOnly = true;
 		}
 
-		$("#origin-destination").html(fromStop + " - " + toStop);
+		var sortByNumberOfStops = false;
+		if ($("#sortByNumberOfStops").hasClass("active")) {
+			sortByNumberOfStops = true;
+		}
+
 		if (jsonData.Kind == "direct") {
 			$("#search-results-count").html(""+len);
 			$("#search-results-type").html("direct");
 			$("#search-results-plural").html(len==1?"":"s");
 			$("#search-alert").addClass("alert alert-success").show();
-			showDirectBuses(jsonData.Buses, fromStop, toStop, showAsCSList, expandAll, showActiveRouteOnly, jsonData.Kind);
+			showDirectBuses(jsonData.Buses, fromStop, toStop, showAsCSList, expandAll, showActiveRouteOnly, sortByNumberOfStops, jsonData.Kind);
 		} else if (jsonData.Kind == "1hop") {
 			$("#search-results-count").html(""+(len/2));
 			$("#search-results-type").html("one change");
 			$("#search-results-plural").html(len/2==1?"":"s");
 			$("#search-alert").addClass("alert alert-info").show();
-			show1HopBuses(jsonData.Buses, fromStop, toStop, showAsCSList, expandAll, showActiveRouteOnly, jsonData.Kind);
+			show1HopBuses(jsonData.Buses, fromStop, toStop, showAsCSList, expandAll, showActiveRouteOnly, sortByNumberOfStops, jsonData.Kind);
 		} else {
 			alert("Application error! Invalid kind: " + jsonData.Kind)
 		}
@@ -672,7 +701,7 @@ var directAccordionString = '<div class="accordion-group">\
 						</div>\
 					</div>';
 
-function showDirectBuses(jsonData, fromStop, toStop, showAsCSList, expandAll, showActiveRouteOnly, kind) {
+function showDirectBuses(jsonData, fromStop, toStop, showAsCSList, expandAll, showActiveRouteOnly, sortByNumberOfStops, kind) {
 
 	$("#search-results-list").html(getNumberListStr(jsonData, kind)).show();
 
@@ -681,13 +710,132 @@ function showDirectBuses(jsonData, fromStop, toStop, showAsCSList, expandAll, sh
 	var fullAccStr = "";
 	// var numberListStr = "";
 	// console.log("ExpandAll in showDirectBuses: "+expandAll);
-	for (i=0; i<len; i++) {
-			var busStopsStr = getRouteBusStopsStr(jsonData[i], fromStop, toStop, showAsCSList, expandAll, showActiveRouteOnly, null);
-			fullAccStr += sprintf(directAccordionString, i+1, jsonData[i].Number, busStopsStr, expandAll||autoOpenFirst?"in":"");
 
-		}
-		$("#accordionDirect").html(fullAccStr).show();
+	var minJsonData = showActiveRouteOnly?getMinimizedDirectRoutes(jsonData, fromStop, toStop):jsonData;
+	var minSortedJsonData = getBusStopCount(minJsonData, fromStop, toStop, sortByNumberOfStops);
+	// for (i=0; i<minJsonData.length; i++) {
+	// 	var busStopsStr = getRouteBusStopsStr(minJsonData[i], fromStop, toStop, showAsCSList, expandAll, showActiveRouteOnly, null);
+	// 	fullAccStr += sprintf(directAccordionString, i+1, minJsonData[i].Number, busStopsStr, expandAll||autoOpenFirst?"in":"");
+	// }
+
+	for (i=0; i<minSortedJsonData.length; i++) {
+		var busStopsStr = getRouteBusStopsStr(minSortedJsonData[i].Bus, fromStop, toStop, showAsCSList, expandAll, showActiveRouteOnly, null);
+		console.log("Going to call function with: " + minSortedJsonData[i].Bus.Number);
+		var numberListStr = "<b>[ " + minSortedJsonData[i].Count + " stops ]</b> " + compressNumberList(minSortedJsonData[i].Bus.Number);
+		// var numberListStr = "<b>[ " + minSortedJsonData[i].Count + " stops ]</b> " + minSortedJsonData[i].Bus.Number;
+		console.log("In func: " + numberListStr);
+
+		fullAccStr += sprintf(directAccordionString, i+1, numberListStr, busStopsStr, expandAll||autoOpenFirst?"in":"");
+		// fullAccStr += sprintf(directAccordionString, i+1, "<b>[ " + minSortedJsonData[i].Count + " stops ]</b> " + minSortedJsonData[i].Bus.Number, busStopsStr, expandAll||autoOpenFirst?"in":"");
 	}
+
+	// for (i=0; i<len; i++) {
+	// 	var busStopsStr = getRouteBusStopsStr(jsonData[i], fromStop, toStop, showAsCSList, expandAll, showActiveRouteOnly, null);
+	// 	fullAccStr += sprintf(directAccordionString, i+1, jsonData[i].Number, busStopsStr, expandAll||autoOpenFirst?"in":"");
+	// }
+	$("#accordionDirect").html(fullAccStr).show();
+}
+
+function getMinimizedDirectRoutes(jsonData, fromStop, toStop) {
+	var len = jsonData.length;
+	if (len == 0) {
+		return null;
+	}
+	var minArr = new Array();
+	for (i=0; i<jsonData.length; i++) {
+
+		//first reduce the list to just active routes
+		var tempArr = new Array();
+		var firstFound = false, secondFound = false;
+		for (j=0; j<jsonData[i].BusStopsA.length; j++) {
+			var value = jsonData[i].BusStopsA[j];
+			// if (value == fromStop ||  value == toStop) {
+			if (value == fromStop ||  (firstFound && value == toStop)) { //to stop against circular routes
+				if (!firstFound) { firstFound = true; }
+				else { secondFound = true; }
+			}
+			if ((firstFound && !secondFound) || (secondFound && (value == fromStop || value == toStop))) {
+				tempArr[tempArr.length] = value;
+			}
+		}
+		// console.log(tempArr.join());
+
+		//run this against all the previous minimized arrays and see if there is an exact match of routes
+		var isMatch = false;
+		for (m=0; m<minArr.length; m++) {
+			if (minArr[m].BusStopsA.length != tempArr.length) {
+				continue;
+			}
+
+			// console.log("Length matches.");
+
+			isMatch = true;
+			for (n=0; n<tempArr.length; n++) {
+				if (tempArr[n] != minArr[m].BusStopsA[n]) {
+					isMatch = false;
+					break;
+				}
+			}
+
+			if (isMatch) {
+				minArr[m].Number += minArr[m].Number==""?"":", ";
+				minArr[m].Number += jsonData[i].Number;
+				// console.log("Matched: " + minArr[m].Number + "," + jsonData[i].Number);
+				break;
+			}
+		}
+		if (!isMatch) {
+			var obj = new Object();
+			obj.Number = jsonData[i].Number;
+			obj.BusStopsA = tempArr;
+			minArr[m] = obj;
+			// console.log("Added new: " + minArr[m].Number + ", " + minArr[m].BusStopsA.join());
+		}
+	}
+
+	for (i=0; i<minArr.length; i++) {
+		// console.log(minArr[i].Number + ":" + minArr[i].BusStopsA.join());
+	}
+	return minArr;
+}
+
+function getBusStopCount(jsonData, fromStop, toStop, order) {
+
+	var tmpArray = new Array();
+
+	for (i=0; i<jsonData.length; i++) {
+		var firstFound = false, secondFound = false;
+		var count = 0;
+		var oneBusData = jsonData[i];
+		for (j=0; j<oneBusData.BusStopsA.length && !secondFound; j++) {
+			var value = oneBusData.BusStopsA[j];
+			// if (value == fromStop ||  value == toStop) {
+			if (value == fromStop ||  (firstFound && value == toStop)) { //to stop against circular routes
+				if (!firstFound) { firstFound = true; }
+				else { secondFound = true; }
+			}
+			if ((firstFound && !secondFound) || (secondFound && (value == fromStop || value == toStop))) {
+				count++;
+			}
+		}
+
+		var obj = new Object();
+		obj.Count = count;
+		obj.Bus = oneBusData;
+		tmpArray[tmpArray.length] = obj;
+	}
+
+	if (order) {
+		tmpArray.sort(function (a, b){return a.Count - b.Count;})
+	}
+
+	// var retArray = new Array();
+	// for (i=0; i<tmpArray.length; i++) {
+	// 	retArray[retArray.length] = tmpArray[i].Bus;
+	// }
+
+	return tmpArray;
+}
 
 function getRouteBusStopsStr(busData, fromStop, toStop, showAsCSList, expandAll, showActiveRouteOnly, allChangePoints) {
 	var busStopsStr = "";
@@ -695,7 +843,8 @@ function getRouteBusStopsStr(busData, fromStop, toStop, showAsCSList, expandAll,
 	for (j=0; j<busData.BusStopsA.length; j++) {
 		var value = busData.BusStopsA[j];
 		var prefix = "", suffix = "";
-		if (value == fromStop ||  value == toStop) {
+		// if (value == fromStop ||  value == toStop) {
+		if (value == fromStop || (firstFound && value == toStop)) { //to take care of circular routes
 			if (!firstFound) { firstFound = true; }
 			else { secondFound = true; }
 			prefix = "<b>";
@@ -750,20 +899,76 @@ function getRouteBusStopsStr(busData, fromStop, toStop, showAsCSList, expandAll,
 function getNumberListStr(jsonData, kind) {
 	var len = jsonData.length;
 	var numberListStr = "";
+	var prevPrefix = "";
+	var regex = /^([A-Z]*[0-9]+)(.*)/;
 	for (i=0; i<len; i++) {
+		var number = jsonData[i].Number;
+
+		if (kind == "direct") {
+			//TODO: there is an issue with bus numbers like 2/99B which is a contiguous route
+			var matched = regex.exec(number);
+			if (matched) {
+				if (prevPrefix != "" && prevPrefix == matched[1]) {
+					if (matched[2] != null) {
+						numberListStr += "/" + matched[2];
+						continue;
+					}
+				}
+				prevPrefix = matched[1]==null?"":matched[1];
+			} else {
+				prevPrefix = "";
+			}
+		}
+
 		if (numberListStr != "") {
 			numberListStr += ", ";
 		}
-		numberListStr += jsonData[i].Number;
+		numberListStr += number;
 		if (kind == "1hop") {
 			numberListStr += "-";
 			i++;
-			numberListStr += jsonData[i].Number;
+			numberListStr += number;
 		}
 	}
 	// console.log(kind);
 	// console.log(numberListStr);
 	return numberListStr;
+}
+
+//TODO: this is similar to getNumberListStr.  Need to refactor.
+function compressNumberList(csStr) {
+	console.log("Called with: " + csStr );
+	var numArr = csStr.split(",");
+	console.log(numArr);
+	var numberListStr = "";
+	var prevPrefix = "";
+	var regex = /^([A-Z]*[0-9]+)(.*)/;
+	var i=0;
+	for (i=0; i<numArr.length; i++) {
+		var number = numArr[i].trim();
+
+		//TODO: there is an issue with bus numbers like 2/99B which is a contiguous route
+		var matched = regex.exec(number);
+		if (matched) {
+			if (prevPrefix != "" && prevPrefix == matched[1]) {
+				if (matched[2] != null) {
+					numberListStr += "/" + matched[2];
+					continue;
+				}
+			}
+			prevPrefix = matched[1]==null?"":matched[1];
+		} else {
+			prevPrefix = "";
+		}
+
+		if (numberListStr != "") {
+			numberListStr += ", ";
+		}
+		numberListStr += number;
+	}
+
+	return numberListStr;
+
 }
 
 var oneHopAccordionString = '<div class="accordion-group">\
@@ -786,7 +991,7 @@ var oneHopAccordionString = '<div class="accordion-group">\
 						</div>\
 					</div>';
 
-function show1HopBuses(jsonData, fromStop, toStop, showAsCSList, expandAll, showActiveRouteOnly, kind) {
+function show1HopBuses(jsonData, fromStop, toStop, showAsCSList, expandAll, showActiveRouteOnly, sortByNumberOfStops, kind) {
 
 	$("#search-results-list").html(getNumberListStr(jsonData, kind)).show();
 
@@ -819,7 +1024,7 @@ function show1HopBuses(jsonData, fromStop, toStop, showAsCSList, expandAll, show
 		$("#accordion1Hop").html(fullAccStr).show();
 	}
 
-	function showStopNameSuggestions(inputId) {
+function showStopNameSuggestions(inputId) {
 	var stop = $("#" + inputId).val();
 	// if (stop.length < 4) {
 	// 	return;
@@ -860,6 +1065,22 @@ function show1HopBuses(jsonData, fromStop, toStop, showAsCSList, expandAll, show
 	$("#suggestedStopNames").html(fullSuggHtml);
 	$("#suggestedStopNamesWrapper").show();
 
+}
+
+function getSuggestionsViaMainStands(from, to) {
+	var mainStands = ["Shivajinagar", "Kempegowda Bus Station/Majestic", "Banashankari", "Jayanagar 4th Block", "Shanthinagar Bus Station", "KR Market", "MCTC Mysore Road Bus Station"];
+	mainStands = mainStands.sort();
+
+	// var suggHtmlTmpl = '<span style="margin: 2px; "><button class="btn btn-default suggestedBothStopNames">%1$s</button></span>';
+	// var fromStopsHtml = "";
+	// var toStopsHtml = "";
+	// for (i=0; i<mainStands.length; i++) {
+	// 	fromStopsHtml += sprintf(suggHtmlTmpl, from + " : " + mainStands[i]);
+	// 	toStopsHtml += sprintf(suggHtmlTmpl, mainStands[i] + " : " + to);
+	// }
+
+	// return "<h5>From " + from + " via </h5>"+ mainStands.join() + "<h5>To " + to + " via </h5>" + mainStands.join();
+	return "<h5>" + mainStands.join(", <br>") + "</h5>";
 }
 
 function validateFromToInputs() {
@@ -988,7 +1209,19 @@ function navigateToFeedback(origin, category, subcategory, reference) {
 // END - code for  feedback section
 
 </script>
+<script type="text/javascript">
 
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-39716904-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
 
 </body>
 </html>
