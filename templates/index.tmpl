@@ -4,7 +4,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Bus in Blr</title>
+	<title>Bus in Blr - BMTC Bus Routes in Bangalore</title>
 	<link rel="stylesheet" href="/staticweb/js/lib/bootstrap/css/bootstrap.min.css">
 	<link rel="stylesheet" href="/staticweb/css/styles.css">
 	<link rel="stylesheet" href="/staticweb/js/lib/bootstrap/css/bootstrap-responsive.min.css">
@@ -23,7 +23,9 @@
 				<!-- <a class="brand" href="#">Bangalore Bus Routes</a> -->
 				<div class="brand" style="color: lightseagreen;">Bus in Blr</div>
 
-				<div id="navItemsCollapse" class="nav-collapse collapse">
+				<!-- <div id="navItemsCollapse" class="nav-collapse collapse"> -->
+				<!-- Did removing the collapse class fix the autoexpand issue for the menu on small screens? -->
+				<div id="navItemsCollapse" class="nav-collapse ">
 					<ul class="nav">
 						<li id="fromToNavBtn" ><a href="#">From-To</a></li>
 						<li id="busNavBtn" ><a href="#">Bus</a></li>
@@ -69,6 +71,7 @@
  -->				</div>
 
 				<div class="span6">
+					<div id="dummyPos" ></div>
 					<div id="search-error" class="alert alert-error"></div>
 					<div id="search-alert" class="alert">Found <em><b><span id="search-results-count">NO</span></b></em> <u id="search-results-type">direct</u> route<span id="search-results-plural">s</span>.  <em><span id="origin-destination"></span></em></div>
 					<div id="search-results-list" class=""></div><p>
@@ -324,6 +327,12 @@
 					<h3>Release notes</h3>
 					<ul>
 						<li>
+							<h5>Version 0.7, 2013/03/31</h5>
+							<ul>
+								<li>Automatically scroll to results position after search.</li>
+								<li>Modified the title to put some important keywords for showing up in search.</li>
+								<li>I'm not sure about this, but I think I've fixed the issue with the nav-bar being automatically expanded in small-screen view.  I removed the collpase class in #navItemsCollapse for that.  Seems to work!</li>
+							</ul>
 							<h5>Version 0.6, 2013/03/30</h5>
 							<ul>
 								<li>In Show Journey Stops Only mode, bus routes are combined under one title if they have the same route.  Much lesser for the user to scroll through.  Also lighter in HTML.</li>
@@ -621,10 +630,28 @@ function getSavedSearch(from, to) {
 function showSearchResults(data) {
 		var jsonData = $.parseJSON(data);
 		showJsonSearchResults(jsonData);
+
+}
+
+function scrollToShowResults() {
+		console.log("Trying to move it.");
+		// This whole thing is a hack.  Need to find a better way I think.
+		var pos = $("#dummyPos").offset().top;
+		var fromPos = $("#fromStop").offset().top;
+		if (pos - fromPos < 25) { //then it is horizontally around the same pos (on a big screen then)
+			pos -= $(".navbar").outerHeight() + 5;
+		} else {
+			pos -= 2;
+		}
+		$('html, body').animate({
+      scrollTop: pos
+    }, 1000);
 }
 
 function showJsonSearchResults(jsonData) {
 		// var jsonData = $.parseJSON(data);
+
+		scrollToShowResults();
 
 		// alert("Received: " + len + " items : " + data);
 		$("#search-error").hide();
@@ -720,10 +747,10 @@ function showDirectBuses(jsonData, fromStop, toStop, showAsCSList, expandAll, sh
 
 	for (i=0; i<minSortedJsonData.length; i++) {
 		var busStopsStr = getRouteBusStopsStr(minSortedJsonData[i].Bus, fromStop, toStop, showAsCSList, expandAll, showActiveRouteOnly, null);
-		console.log("Going to call function with: " + minSortedJsonData[i].Bus.Number);
+		// console.log("Going to call function with: " + minSortedJsonData[i].Bus.Number);
 		var numberListStr = "<b>[ " + minSortedJsonData[i].Count + " stops ]</b> " + compressNumberList(minSortedJsonData[i].Bus.Number);
 		// var numberListStr = "<b>[ " + minSortedJsonData[i].Count + " stops ]</b> " + minSortedJsonData[i].Bus.Number;
-		console.log("In func: " + numberListStr);
+		// console.log("In func: " + numberListStr);
 
 		fullAccStr += sprintf(directAccordionString, i+1, numberListStr, busStopsStr, expandAll||autoOpenFirst?"in":"");
 		// fullAccStr += sprintf(directAccordionString, i+1, "<b>[ " + minSortedJsonData[i].Count + " stops ]</b> " + minSortedJsonData[i].Bus.Number, busStopsStr, expandAll||autoOpenFirst?"in":"");
@@ -937,9 +964,9 @@ function getNumberListStr(jsonData, kind) {
 
 //TODO: this is similar to getNumberListStr.  Need to refactor.
 function compressNumberList(csStr) {
-	console.log("Called with: " + csStr );
+	// console.log("Called with: " + csStr );
 	var numArr = csStr.split(",");
-	console.log(numArr);
+	// console.log(numArr);
 	var numberListStr = "";
 	var prevPrefix = "";
 	var regex = /^([A-Z]*[0-9]+)(.*)/;
