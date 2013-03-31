@@ -639,7 +639,8 @@ function scrollToShowResults() {
 		var pos = $("#dummyPos").offset().top;
 		var fromPos = $("#fromStop").offset().top;
 		if (pos - fromPos < 25) { //then it is horizontally around the same pos (on a big screen then)
-			pos -= $(".navbar").outerHeight() + 5;
+			// pos -= $(".navbar").outerHeight() + 5;
+			return;
 		} else {
 			pos -= 2;
 		}
