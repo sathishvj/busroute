@@ -86,9 +86,18 @@
 							<div class="carousel-inner">
 								<div class="active item">
 									<div class="hero-unit">
+										<h4 style="color: lightseagreen;">New Usability Feature! <small>2013/03/31</small></h4>
+										<h2 style="color: lightseagreen;">Auto Scroll to Results on Small Screens</h2>
+										<p>For mobile users ... btw, did you know that <span style="color: lightseagreen;">Bus in Blr</span> works great from mobiles! Go ahead, try it out.</p>
+										<p>So again, for mobile users, you are automatically scrolled down to where the results of the search are. Just makes it natural and convenient.</p>
+										<h4 style="color: lightseagreen;">Journey On!</h4>
+									</div>
+								</div>
+								<div class="item">
+									<div class="hero-unit">
 										<h4 style="color: lightseagreen;">Multiple new UI Features! <small>2013/03/30</small></h4>
 										<h2 style="color: lightseagreen;">Grouping. Concatenating. Sorting.</h2>
-										<p>Grouping of same routes. Much lesser to scroll, less text on page - easier and faster for you.</p>
+										<p>Grouping of same journey routes in Show Journey Stops Only mode. Much lesser to scroll, less text on page - easier and faster for you.</p>
 										<p>Concatenating similar route numbers - you assimilate the information quicker.</p>
 										<p>Sorting routes by number of stops. On by default and the best routes are the first you see.</p>
 										<h4 style="color: lightseagreen;">Journey On! Easier! Faster!</h4>
@@ -1092,6 +1101,7 @@ function showStopNameSuggestions(inputId) {
 
 	$("#suggestedStopNames").html(fullSuggHtml);
 	$("#suggestedStopNamesWrapper").show();
+	scrollToShowResults();
 
 }
 
