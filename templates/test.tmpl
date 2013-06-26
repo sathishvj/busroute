@@ -1,0 +1,211 @@
+{{define "test"}}
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Tests for Bus in Blr</title>
+
+	<style>
+	.fail {
+		color: white;
+		background-color: red;
+		display: block;
+		width: 100%;
+	}
+
+	.success {
+		color: white;
+		background-color: green;
+		display: block;
+		width: 100%;
+	}
+	</style>
+</head>
+<body>
+	<div id="testResults">
+
+	</div>
+
+	<script src="/staticweb/js/lib/jquery-1.9.1.min.js"></script>
+	<script src="/staticweb/js/lib/sprintf-0.7-beta1.js"></script>
+	<script>
+	var busStopNames = {{.BusStops}};
+	var busNumbers = {{.BusNumbers}};
+
+	var cnt = 0;
+	var totF = 0;
+	var totS = 0;
+
+	//global setup
+	$(document).ready(function() {
+		updateResult(testBusStopNames());
+		updateResult(testBusNumbers());
+
+		testBusNumberSearch("2009", null);
+		testBusNumberSearch("201", $.parseJSON('{\
+			"Number": "201",\
+			"BusStopsA": ["Srinagar","Srinagar Apex Bank","Srinivasanagar (Banashankari 1st Stage)","Banashankari 1st Stage/Mysore Bank Colony","Seetha Circle","Hosakerehalli Cross","Katriguppe Janata Bazaar","Katriguppe","Kamakhya Theater","Devegowda Petrol Bunk","Mini Zoo (KIMS Hospital)","Indira Nursing Home","Banashankari 2nd Stage Post Office","Monotype Corporation","Kaverinagar (Banashankari)","Yarabnagar","Banashankari","Sangam Circle","Jayanagar 5th Block","Aurobindo Circle (JP Nagar)","Marenahalli (Jayanagar 5th Block)","Ragigudda","Jayanagar 9th Block East End","Jayadeva Hospital","MICO Layout","BTM Layout Water Tank","BTM Layout 16th Main/Udupi Garden","Kuvempunagar (BTM Layout)","Central Silk Board","Madiwala Police Station","Madiwala Ayyappa Temple","Koramangala Kendriya Sadan","Koramangala Water Tank","Koramangala BDA Complex","Koramangala Canara Bank","Koramangala Junction of 80 Feet and 100 Feet Road/Sony World","Koramangala BMTC Depot","Regional Passport Office","National Games Village","Sonnenahalli (Viveknagar)","Vannarpet","Austin Town","St Philomena Hospital","D\'Souza Circle","Mayo Hall","Electric B Station (MG Road)","Trinity Circle","Begum Mahal Circle","Halasuru/Ulsoor","Lakshmipura (Halasuru)","Indiranagar 100 Feet Road/Indiranagar Police Station","Indiranagar 6th Main Road","Indiranagar 13th Main Road","Doopanahalli","Domlur"],\
+			"BusStopsB": []\
+		}'));
+
+		testBusNumberSearch("BC8", $.parseJSON('{\
+			"Number": "BC8",\
+			"BusStopsA": ["Jalahalli Cross","Ayyappanagar (Jalahalli)","Jalahalli West","Kammagondanahalli Bridge","Gangamma Circle","BEL Market","BEL Circle","BEL Hospital","Nagaland Circle","Doddabommasandra Arch","Doddabommasandra","Chamundeshwari Layout (Vidyaranyapura)","Nanjappa Circle (Vidyaranyapura)","Vidyaranyapura 1st Block","Vidyaranyapura Canara Bank","Vidyaranyapura Post Office","Vidyaranyapura Eechala Mara","Vidyaranyapura"],\
+			"BusStopsB": []\
+		}'));
+
+		testBusNumberSearch("258J", $.parseJSON('{\
+			"Number": "258J",\
+			"BusStopsA": ["KR Market","Town Hall","Corporation","Kaveri Bhavan","Kempegowda Bus Station/Majestic","Platform Road","Central Talkies","Sheshadripuram","Malleswaram Circle","Malleswaram 8th Cross","Malleswaram 11th Cross","Malleswaram 18th Cross","Tata Institute (IISc)","Yeshwanthpur","Govardhan Theater","MEI Factory","Goraguntepalya","CMTI","Peenya 1st Stage","Jalahalli Cross","Dasarahalli (Tumkur Road)","Tumkur Road 8th Mile","Widia Factory","Morrison Factory","Chikkabidarakallu","Jindal Factory","Anchepalya (Tumkur Road)","Bangalore International Exhibition Centre","Madavara","TCI (Tumkur Road)","Madanayakanahalli","Makali","Adakamaranahalli","Dasanapura (Nelamangala)","Devayyanapalya","Arisinakunte","Binnamangala (Tumkur Road)","Nelamangala Janapriya Apartment","Nelamangala Weavers Colony","Josco College Of Nursing","Nelamangala TB Stop","Nelamangala","Mariyammananagar"],\
+			"BusStopsB": []\
+		}'));
+
+		testRoute("abcd", "efgh", null);
+		testRoute("Adur", "Adlur", null);
+		testRoute("ADE/GTRE", "MG Road (Anil Kumble Circle)", null);
+		testRoute("Shivajinagar", "Heligehalli Colony", null);
+		testRoute("Shivajinagar", "abcd", null);
+
+		testRoute("Jayanagar 4th Block", "Sadashivanagar", ["28"]);
+		testRoute("Kengeri", "ITPL", ["600", "600E", "601", "D6", "V500KS"]);
+		testRoute("Shivajinagar", "Double Road", ["13", "13A", "13B", "13C", "13D", "13E", "13F", "13G", "13H", "13J", "13K", "20", "21A", "22A", "27", "27A", "27E", "27N", "29", "29A", "29E", "32", "32E", "34", "34A", "34B", "34C", "34E", "34F", "34H", "34S", "37", "37A", "37B", "37D", "37E", "37F", "37G", "107D", "159", "161B", "161C", "161D", "161F", "166", "166A", "182", "183", "183A", "210F", "210FA", "210G", "210GA", "210HA", "210KB", "210Q", "215U", "270H", "301E", "340F", "341G", "342R", "342WA", "347L", "348D", "360F", "360G", "365C", "368B", "368C", "368D", "368E", "368F", "404J", "BIAS7", "J166", "K6", "MBS11", "MBS14", "MF3", "TR7", "TR9", "V13Z"]);
+		testRoute("Banashankari", "Hebbal", ["287M", "402M", "500", "500A", "500E", "500G", "501", "501A", "501B", "501BA", "501G", "600", "600E", "601", "C5", "C9", "D5", "V500A", "V500AG", "V500AL"]);
+		// testRoute("Adur", "Adlur", $.parseJSON("{}"));
+
+		// $("#testResults").html($("#testResults").html() + "<hr>Total Results:<br>" + "Ran: " + cnt + "<br>Success: " + totS + "<br>Failed: " + totF);
+	});
+
+	var testResultHtml = '<div class="testResult">\
+		<div class="%1$s">%2$s : %3$s </div>\
+		<div><b>Expected:</b> %4$s</div>\
+		<div><b>Got:</b> %5$s</div>\
+	</div>';
+
+	function updateResult(obj) {
+		var result = "";
+		if (obj.Result) {
+			result = "success";
+			totS++;
+		} else {
+			result = "fail";
+			totF++;
+		}
+		var newHtml = sprintf(testResultHtml, result, ++cnt, obj.Title, obj.Exp, obj.Got);
+		$("#testResults").html($("#testResults").html() + newHtml);
+	}
+
+	function testBusStopNames() {
+		var start = new Date();
+		var expected = 2403;
+		var got = busStopNames.length;
+		var result = expected==got;
+
+		return {Title: "Count Bus Stop Names", Exp: expected, Got: got, Result: result, Start: start};
+	}
+
+	function testBusNumbers() {
+		var expected = 2879;
+		var got = busNumbers.length;
+		var result = expected==got;
+
+		return {Title: "Count Bus Numbers", Exp: expected, Got: got, Result: result};
+	}
+
+	function testBusNumberSearch(num, bus) {
+		var url = "/b?number=" + escape(num);
+		var start = new Date();
+
+		$.get(url, function(data) {
+			if (bus != null) {
+				var jsonData = $.parseJSON(data);
+				var result = isSameBus(jsonData, bus);
+				if (jsonData.Kind != "direct") {
+					updateResult({Title: "Bus Number: " + num, Exp: JSON.stringify(bus), Got: JSON.stringify(jsonData), Result: result, Start: start});
+					return;
+				}
+			} else {
+				var jsonData = $.parseJSON(data);
+				// console.log(jsonData);
+				// console.log(jsonData == null);
+				// console.log(bus);
+				// console.log(bus == null);
+				var result = (!bus && !jsonData);
+				updateResult({Title: "Bus Number: " + num, Exp: bus, Got: data, Result: result, Start: start});
+				return;
+			}
+
+			updateResult({Title: "Bus Number: " + num + "  (Default result as I don't know other options.)", Exp: bus, Got: data, Result: false, Start: new Date()});
+		});
+	}
+
+	function isSameBus(a, b) {
+		if (a.Number != b.Number || a.BusStopsA.length != b.BusStopsA.length || a.BusStopsB.length != b.BusStopsB.length) {
+			return false;
+		}
+		for (i=0; i<a.BusStopsA.length; i++) {
+			if (a.BusStopsA[i] != b.BusStopsA[i]) {
+				return false;
+			}
+		}
+		for (i=0; i<a.BusStopsB.length; i++) {
+			if (a.BusStopsB[i] != b.BusStopsB[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	function testRoute(from, to, routes) {
+		var url = "/r?from=" + escape(from) + "&to=" + escape(to);
+		var start = new Date();
+
+		$.get(url, function(data) {
+			var jsonData = $.parseJSON(data);
+
+			if (routes != null) {
+				// console.log(jsonData);
+				var result = isSameRoute(jsonData, routes);
+				// updateResult({Title: "Bus Route: " + from + "-" + to, Exp: JSON.stringify(routes), Got: "hidden" , Result: result, Start: start});
+				updateResult({Title: "Bus Route: " + from + "-" + to, Exp: JSON.stringify(routes), Got: JSON.stringify(jsonData) , Result: result, Start: start});
+				return;
+			} else {
+				var result = (!jsonData.Buses  && !routes);
+				// console.log("In else part: " + jsonData);
+				updateResult({Title: "Bus Route: " + from + "-" + to, Exp: routes, Got: jsonData, Result: result, Start: start});
+				return;
+			}
+
+			updateResult({Title: "Bus Route: " + from + "-" + to + "  (Default result as I don't know other options.)", Exp: routes, Got: data, Result: false, Start: start});
+		});
+	}
+
+	function isSameRoute(jsonData, routes) {
+		if ((!jsonData && !routes) || (!jsonData.Buses && !routes)) {
+			return false;
+		}
+		if (routes.length == 0 && (!jsonData || !jsonData.Buses)) {
+			return true;
+		}
+
+		if (!jsonData.Buses && routes.length != 0) {
+			return false;
+		}
+
+		if (jsonData.Buses.length != routes.length) {
+			// console.log("Lengths don't match. " + jsonData.Buses.length + ", " + routes.length);
+			return false;
+		}
+		// console.log("Lengths match.");
+
+		for (i=0; i<jsonData.Buses.length; i++) {
+			if (jsonData.Buses[i].Number != routes[i]) {
+				console.log("Bus number does not match: " + jsonData.Buses[i].Number + ", " + routes[i]);
+				return false;
+			}
+		}
+		return true;
+	}
+	</script>
+</body>
+</html>
+{{end}}

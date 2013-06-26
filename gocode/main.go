@@ -31,6 +31,7 @@ func init() {
 	m.HandleFunc("/b", busNumberAjaxHandler).Methods("GET")
 	m.HandleFunc("/f", feedbackAjaxHandler).Methods("POST")
 	// m.HandleFunc("/{path:.*}", pageNotFoundHandler).Methods("GET")
+	m.HandleFunc("/t", testHandler).Methods("GET")
 
 	http.Handle("/", m)
 }
@@ -85,7 +86,7 @@ func routeAtoBAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	*/
 	writeSuccessJSONResponse(c, w, struct {
 		Kind  string
-		Buses []Bus
+		Buses []*Bus
 	}{
 		kind,
 		buses,
@@ -148,4 +149,31 @@ func writeSuccessJSONResponse(c appengine.Context, w http.ResponseWriter, v inte
 	}
 	fmt.Fprint(w, string(b))
 	c.Infof("main.go: writeSuccessJSONResponse: Successfully wrote data to ResponseWriter.")
+}
+
+func testHandler(w http.ResponseWriter, r *http.Request) {
+
+	c := appengine.NewContext(r)
+
+	c.Infof("main.go: testHandler(): Request received to: %s", r.URL.RequestURI())
+
+	busStopNames := getBusStopNames()
+	if len(busStopNames) == 0 {
+		c.Errorf("main.go: rootHandler(): There were no bus stops.")
+	}
+
+	busNumbers := getBusNumbers()
+	if len(busNumbers) == 0 {
+		c.Errorf("main.go: rootHandler(): There were no bus numbers.")
+	}
+
+	if err := templates.ExecuteTemplate(w, "test", struct {
+		BusStops   []string
+		BusNumbers []string
+	}{
+		busStopNames,
+		busNumbers,
+	}); err != nil {
+		c.Errorf("main.go: rootHandler(): Error executing template: ", err)
+	}
 }

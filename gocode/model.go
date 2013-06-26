@@ -41,8 +41,11 @@ type Feedback struct {
 }
 
 //global variables that we will have to load once
-var busStops []BusStop
+// var busStops []BusStop
 var buses []Bus
+
+var mBuses map[string]*Bus
+var mBusStopRoutes map[string][]*Bus
 
 func initData() error {
 	//Load data in the busstops file.
@@ -52,6 +55,7 @@ func initData() error {
 
 	busStopsBuf := readFile("gocode/busstops.json")
 	// fmt.Println("Info: model.go: initData(): Full busstops file as bytes: ", string(busStopsBuf))
+	var busStops []Bus
 	if err = json.Unmarshal(busStopsBuf, &busStops); err != nil {
 		panic("Error: model.go: initData(): Error unmarshaling busstops data: " + err.Error())
 	}
@@ -63,6 +67,28 @@ func initData() error {
 		panic("Error: model.go: initData(): Error unmarshaling buses data: " + err.Error())
 	}
 	// fmt.Println("Info: model.go: initData(): Full busstops file as objects: ", buses)
+
+	mBuses = make(map[string]*Bus)
+	for i := 0; i < len(buses); i++ {
+		mBuses[buses[i].Number] = &buses[i]
+	}
+
+	mBusStopRoutes = make(map[string][]*Bus)
+	for i := 0; i < len(buses); i++ {
+		bus := &buses[i]
+		for j := 0; j < len(bus.BusStopsA); j++ {
+			var found = false
+			for k := 0; k < len(mBusStopRoutes[bus.BusStopsA[j]]); k++ {
+				if mBusStopRoutes[bus.BusStopsA[j]][k] == bus {
+					found = true
+					break
+				}
+			}
+			if !found {
+				mBusStopRoutes[bus.BusStopsA[j]] = append(mBusStopRoutes[bus.BusStopsA[j]], bus)
+			}
+		}
+	}
 
 	return nil
 }
@@ -102,43 +128,88 @@ func readFile(path string) []byte {
 	return fullBuf
 }
 
+// func getBusStopNames() []string {
+// 	var names []string
+// 	for _, stop := range busStops {
+// 		names = append(names, stop.Name)
+// 	}
+// 	sort.Strings(names)
+// 	return names
+// }
+
+var busStopNames []string
+
+// func getBusStopNames() []string {
+// 	if len(busStopNames) > 0 {
+// 		return busStopNames
+// 	}
+
+// 	for _, stop := range busStops {
+// 		busStopNames = append(busStopNames, stop.Name)
+// 	}
+// 	sort.Strings(busStopNames)
+// 	return busStopNames
+// }
+
 func getBusStopNames() []string {
-	var names []string
-	for _, stop := range busStops {
-		names = append(names, stop.Name)
+	if len(busStopNames) > 0 {
+		return busStopNames
 	}
-	sort.Strings(names)
-	return names
+
+	for k, _ := range mBusStopRoutes {
+		busStopNames = append(busStopNames, k)
+	}
+	sort.Strings(busStopNames)
+	return busStopNames
 }
 
-func getDirectBuses(from, to string) []Bus {
-	var selBuses []Bus
+// func getDirectBuses(from, to string) []Bus {
+// 	var selBuses []Bus
 
-	for _, bus := range buses {
-		fromExists, toExists, reverse := false, false, false
+// 	for _, bus := range buses {
+// 		fromExists, toExists, reverse := false, false, false
 
-		for _, stopName := range bus.BusStopsA {
-			if stopName == from {
-				fromExists = true
-			}
-			if stopName == to {
-				toExists = true
-				if toExists && !fromExists { //we need to reverse the order of stops
-					reverse = true
-				}
-			}
+// 		for _, stopName := range bus.BusStopsA {
+// 			if stopName == from {
+// 				fromExists = true
+// 			}
+// 			if stopName == to {
+// 				toExists = true
+// 				if toExists && !fromExists { //we need to reverse the order of stops
+// 					reverse = true
+// 				}
+// 			}
 
-			if fromExists && toExists {
-				if reverse {
-					revBus := reverseBus(bus)
-					selBuses = append(selBuses, revBus)
-				} else {
-					selBuses = append(selBuses, bus)
-				}
+// 			if fromExists && toExists {
+// 				if reverse {
+// 					revBus := reverseBus(bus)
+// 					selBuses = append(selBuses, revBus)
+// 				} else {
+// 					selBuses = append(selBuses, bus)
+// 				}
+// 				break
+// 			}
+// 		}
+
+// 	}
+
+// 	return selBuses
+// }
+
+func getDirectBuses(from, to string) []*Bus {
+	var selBuses []*Bus
+
+	fromBuses := mBusStopRoutes[from]
+	toBuses := mBusStopRoutes[to]
+
+	for i := 0; i < len(fromBuses); i++ {
+		for j := 0; j < len(toBuses); j++ {
+			if fromBuses[i].Number == toBuses[j].Number {
+				selBuses = append(selBuses, fromBuses[i])
+				fmt.Println(selBuses[len(selBuses)-1])
 				break
 			}
 		}
-
 	}
 
 	return selBuses
@@ -258,8 +329,24 @@ func get1HopBuses(from, to string, c appengine.Context) []Bus {
 	return selBuses
 }
 
+// func getBusNumbers() []string {
+// 	var busNumbers []string
+// 	for _, bus := range buses {
+// 		busNumbers = append(busNumbers, bus.Number)
+// 	}
+
+// 	sort.Strings(busNumbers)
+
+// 	return busNumbers
+// }
+
+var busNumbers []string
+
 func getBusNumbers() []string {
-	var busNumbers []string
+	if len(busNumbers) > 0 {
+		return busNumbers
+	}
+
 	for _, bus := range buses {
 		busNumbers = append(busNumbers, bus.Number)
 	}
@@ -269,14 +356,18 @@ func getBusNumbers() []string {
 	return busNumbers
 }
 
-func getBus(number string) *Bus {
-	for _, bus := range buses {
-		if bus.Number == number {
-			return &bus
-		}
-	}
+// func getBus(number string) *Bus {
+// 	for _, bus := range buses {
+// 		if bus.Number == number {
+// 			return &bus
+// 		}
+// 	}
 
-	return nil
+// 	return nil
+// }
+
+func getBus(number string) *Bus {
+	return mBuses[number]
 }
 
 func addFeedback(c appengine.Context, subject, reference, details, email string) error {
